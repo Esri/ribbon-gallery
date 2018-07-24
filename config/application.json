@@ -1,0 +1,28 @@
+{
+  "appid": "",
+  "group": "37b76860fe0d4481ad12f13db103d54c",
+  "title": "Ribbon Gallery",
+  "usePortalBasemap": false,
+  "webmap": "",
+  "webscene": "",
+  "portalUrl": "https://www.arcgis.com",
+  "oauthappid": "hrFP8yDGOiGFx4ub",
+  "proxyUrl": "https://maps.esri.com/proxy/DotNet/proxy.ashx",
+  "units": "dual",
+  "helperServices": {
+    "geometry": {
+      "url": null
+    },
+    "printTask": {
+      "url": null
+    },
+    "elevationSync": {
+      "url": null
+    },
+    "geocode": [
+      {
+        "url": null
+      }
+    ]
+  }
+}

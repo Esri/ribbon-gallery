@@ -1,0 +1,28 @@
+{
+  "configurationSettings": [
+    {
+      "category": "General Settings",
+      "fields": [
+        {
+          "type": "paragraph",
+          "value": "This template can be configured to any Group in an Organization"
+        },
+        {
+          "type": "group"
+        },
+        {
+          "type": "string",
+          "fieldName": "title",
+          "label": "Title",
+          "tooltip": "The title for this configured application",
+          "stringFieldOption": "textbox",
+          "placeHolder": "enter the application title here"
+        }
+      ]
+    }
+  ],
+  "values": {
+    "group": "",
+    "title": ""
+  }
+}
