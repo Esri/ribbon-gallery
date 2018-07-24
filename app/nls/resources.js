@@ -51,7 +51,6 @@ define({
         "layer_no_create_template": "Could NOT create layer from item '{title}'",
         "item_not_layer_template": "Item '{title}' is NOT a layer"
       }
-
     }
   },
   en: true

@@ -18,8 +18,8 @@ define([
   "calcite",
   "dojo/_base/declare",
   "dojo/_base/lang",
-  "ApplicationBase/ApplicationBase",
   "dojo/i18n!./nls/resources",
+  "ApplicationBase/ApplicationBase",
   "ApplicationBase/support/itemUtils",
   "ApplicationBase/support/domHelper",
   "dojo/touch",
@@ -30,11 +30,11 @@ define([
   "dojo/dom-geometry",
   "dojo/dom-construct",
   "esri/core/Evented",
+  "esri/core/watchUtils",
+  "esri/core/promiseUtils",
   "esri/identity/IdentityManager",
   "esri/portal/Portal",
   "esri/portal/PortalItem",
-  "esri/core/watchUtils",
-  "esri/core/promiseUtils",
   "esri/Map",
   "esri/views/MapView",
   "esri/views/SceneView",
@@ -46,9 +46,9 @@ define([
   "esri/widgets/Legend",
   "esri/widgets/BasemapGallery",
   "esri/widgets/Expand"
-], function (calcite, declare, lang, ApplicationBase, i18n, itemUtils, domHelper,
+], function (calcite, declare, lang, i18n, ApplicationBase, itemUtils, domHelper,
              touch, on, query, dom, domClass, domGeom, domConstruct,
-             Evented, IdentityManager, Portal, PortalItem, watchUtils, promiseUtils,
+             Evented, watchUtils, promiseUtils, IdentityManager, Portal, PortalItem,
              EsriMap, MapView, SceneView, Layer,
              Home, Search, Compass, LayerList, Legend, BasemapGallery, Expand) {
   /**
@@ -111,14 +111,14 @@ define([
           // ADD ITEM TO MAP //
           this.addItemToMap = this._addItemToMap(map_infos.map);
 
-          // INITIALIZE CONTENT //
-          this.initializeGroupContent(this.base.config.group);
-
           // SYNC VIEWS //
           this.initializeSynchronizedViews(map_infos.views);
 
           // VIEW TYPE SWITCH //
           this.initializeViewTypeSwitch(map_infos.views);
+
+          // INITIALIZE CONTENT //
+          this.initializeGroupContent(this.base.config.group);
 
           // INITIALIZE CREATE MAP //
           this.initializeCreateOnlineMap(map_infos);
@@ -266,11 +266,7 @@ define([
         map: map,
         center: [5.0, 20.0],
         scale: 104255914,
-        constraints: (type === "2d") ? {
-          snapToZoom: false
-        } : {
-          altitude: { max: (EARTH_RADIUS * 6) }
-        },
+        constraints: (type === "2d") ? { snapToZoom: false } : { altitude: { max: (EARTH_RADIUS * 6) } },
         highlightOptions: {
           color: "#00c0eb",
           haloOpacity: 0.8,
@@ -356,198 +352,206 @@ define([
           this.initializeViewSpinTools(view);
         }
 
-        // LAYERS PANEL //
-        const layers_panel = domConstruct.create("div", { className: "panel panel-no-padding" });
-        const action_node = domConstruct.create("div", { className: "panel panel-dark-blue panel-no-padding padding-left-half padding-right-1 font-size-0" }, layers_panel);
-        domConstruct.create("span", { innerHTML: i18n.map.layers_panel.label }, action_node);
-
-        // REMOVE ALL LAYERS //
-        const remove_layers_btn = domConstruct.create("span", {
-          className: "icon-ui-close-circled icon-ui-flush esri-interactive right",
-          title: i18n.map.remove_layers.title
-        }, action_node);
-        on(remove_layers_btn, "click", () => {
-          view.map.layers.removeAll();
-          this.displayItemDetails();
-        });
-
-        // SET LAYERS VISIBILITY //
-        const show_layers_btn = domConstruct.create("span", {
-          className: "icon-ui-checkbox-checked esri-interactive right",
-          title: i18n.map.show_layers.title
-        }, action_node);
-        on(show_layers_btn, "click", () => {
-          this.setAllLayersVisibility(true);
-          this.displayItemDetails();
-        });
-        const hide_layers_btn = domConstruct.create("span", {
-          className: "icon-ui-checkbox-unchecked esri-interactive right",
-          title: i18n.map.hide_layers.title
-        }, action_node);
-        on(hide_layers_btn, "click", () => {
-          this.setAllLayersVisibility(false);
-          this.displayItemDetails();
-        });
-
-        // CREATE OPACITY NODE //
-        const createOpacityNode = (item, parent_node) => {
-          const opacity_node = domConstruct.create("div", {
-            className: "layer-opacity-node esri-widget",
-            title: i18n.map.layer_opacity.title
-          }, parent_node);
-          const opacity_input = domConstruct.create("input", {
-            className: "opacity-input",
-            type: "range", min: 0, max: 1.0, step: 0.01,
-            value: item.layer.opacity
-          }, opacity_node);
-          on(opacity_input, "input", () => {
-            item.layer.opacity = opacity_input.valueAsNumber;
-          });
-          item.layer.watch("opacity", (opacity) => {
-            opacity_input.valueAsNumber = opacity;
-          });
-          opacity_input.valueAsNumber = item.layer.opacity;
-          return opacity_node;
-        };
-
-        // CREATE TOOLS NODE //
-        const createToolsNode = (item, parent_node) => {
-          // TOOLS NODE //
-          const tools_node = domConstruct.create("div", { className: "esri-widget" }, parent_node, "first");
-
-          // REORDER //
-          const reorder_node = domConstruct.create("div", { className: "inline-block" }, tools_node);
-          const reorder_up_node = domConstruct.create("button", {
-            className: "btn-link esri-icon-arrow-up",
-            title: i18n.map.move_layer_up.title
-          }, reorder_node);
-          const reorder_down_node = domConstruct.create("button", {
-            className: "btn-link esri-icon-arrow-down",
-            title: i18n.map.move_layer_down.title
-          }, reorder_node);
-          on(reorder_up_node, "click", () => {
-            view.map.reorder(item.layer, view.map.layers.indexOf(item.layer) + 1);
-          });
-          on(reorder_down_node, "click", () => {
-            view.map.reorder(item.layer, view.map.layers.indexOf(item.layer) - 1);
-          });
-
-          // REMOVE LAYER //
-          const remove_layer_node = domConstruct.create("button", {
-            className: "btn-link icon-ui-close right",
-            title: i18n.map.remove_layer.title
-          }, tools_node);
-          on.once(remove_layer_node, "click", () => {
-            view.map.remove(item.layer);
-            this.emit("layer-removed", item.layer);
-          });
-
-          // ZOOM TO //
-          const zoom_to_node = domConstruct.create("button", {
-            className: "btn-link icon-ui-zoom-in-magnifying-glass right",
-            title: i18n.map.zoom_to_layer.title
-          }, tools_node);
-          on(zoom_to_node, "click", () => {
-            view.goTo(item.layer.fullExtent);
-          });
-
-          // LAYER DETAILS //
-          const info_node = domConstruct.create("span", {
-            className: "btn-link icon-ui-description icon-ui-blue right",
-            title: i18n.map.view_details.title
-          }, tools_node);
-          on(info_node, "click", () => {
-            this.displayItemDetails(item.layer.portalItem);
-          });
-
-          return tools_node;
-        };
-
-        // CREATE LEGEND NODE //
-        const createLegendNode = (item, parent_node) => {
-
-          const legend_panel = domConstruct.create("div", { className: "legend-panel esri-widget" }, parent_node);
-
-          const legend = new Legend({
-            container: domConstruct.create("div", {}, legend_panel),
-            view: view,
-            layerInfos: [{ layer: item.layer }]
-          });
-
-          const legend_toggle_node = domConstruct.create("button", {
-            className: "legend-toggle btn-link icon-ui-down",
-            title: i18n.map.legend_toggle.title
-          }, legend_panel);
-          const legend_toggle_label = domConstruct.create("div", {
-            className: "font-size--2 inline-block hide",
-            innerHTML: i18n.map.legend_label.innerHTML
-          }, legend_toggle_node);
-
-          on(legend_toggle_node, "click", () => {
-            domClass.toggle(legend_toggle_label, "hide");
-            domClass.toggle(legend_toggle_node, "legend-toggle-hidden icon-ui-down icon-ui-right");
-            domClass.toggle(legend.domNode, "hide");
-          });
-
-        };
-
-        // LAYER LIST //
-        const layerList = new LayerList({
-          view: view,
-          container: domConstruct.create("div", {}, layers_panel),
-          listItemCreatedFunction: (evt) => {
-            let item = evt.item;
-            if(item.layer && item.layer.portalItem) {
-
-              // CREATE ITEM PANEL //
-              const panel_node = domConstruct.create("div", { className: "esri-widget" });
-
-              // LAYER TOOLS //
-              createToolsNode(item, panel_node);
-
-              // LAYER OPACITY //
-              createOpacityNode(item, panel_node);
-
-              // LEGEND //
-              if(item.layer.legendEnabled) {
-                createLegendNode(item, panel_node);
-              }
-
-              // SET ITEM PANEL //
-              item.panel = {
-                title: i18n.map.settings_panel.title,
-                className: "esri-icon-settings",
-                content: panel_node
-              };
-            } 
-          }
-        });
-        const layerListExpand = new Expand({
-          view: view,
-          content: layers_panel,
-          iconNumber: 0,
-          expandIconClass: "esri-icon-layers",
-          expandTooltip: i18n.map.layerlist_expand.tooltip
-        });
-        view.ui.add(layerListExpand, { position: "top-right", index: 1 });
-
-        // LAYER COUNT //
-        view.map.layers.on("change", () => {
-          layerListExpand.iconNumber = view.map.layers.length;
-        });
-
-        // SYNCHRONIZE LAYERLIST EXPANDS //
-        layerListExpand.watch("expanded", (expanded) => {
-          this.emit("layerlist-expanded", { expanded: expanded, source: layerListExpand });
-        });
-        this.on("layerlist-expanded", evt => {
-          if((evt.source !== layerListExpand) && (evt.expanded !== layerListExpand.expanded)) {
-            layerListExpand.toggle();
-          }
-        });
+        // INITIALIZE LAYER LIST //
+        this.initializeLayerList(view);
 
         // RETURN THE VIEW //
         return view;
+      });
+
+    },
+
+    /**
+     *
+     * @param view
+     */
+    initializeLayerList: function (view) {
+
+      // LAYERS PANEL //
+      const layers_panel = domConstruct.create("div", { className: "panel panel-no-padding" });
+      const action_node = domConstruct.create("div", { className: "panel panel-dark-blue panel-no-padding padding-left-half padding-right-1 font-size-0" }, layers_panel);
+      domConstruct.create("span", { innerHTML: i18n.map.layers_panel.label }, action_node);
+
+      // REMOVE ALL LAYERS //
+      const remove_layers_btn = domConstruct.create("span", {
+        className: "icon-ui-close-circled icon-ui-flush esri-interactive right",
+        title: i18n.map.remove_layers.title
+      }, action_node);
+      on(remove_layers_btn, "click", () => {
+        view.map.layers.removeAll();
+        this.displayItemDetails();
+      });
+
+      // SET LAYERS VISIBILITY //
+      const show_layers_btn = domConstruct.create("span", {
+        className: "icon-ui-checkbox-checked esri-interactive right",
+        title: i18n.map.show_layers.title
+      }, action_node);
+      on(show_layers_btn, "click", () => {
+        this.setAllLayersVisibility(true);
+        this.displayItemDetails();
+      });
+      const hide_layers_btn = domConstruct.create("span", {
+        className: "icon-ui-checkbox-unchecked esri-interactive right",
+        title: i18n.map.hide_layers.title
+      }, action_node);
+      on(hide_layers_btn, "click", () => {
+        this.setAllLayersVisibility(false);
+        this.displayItemDetails();
+      });
+
+      // CREATE OPACITY NODE //
+      const createOpacityNode = (item, parent_node) => {
+        const opacity_node = domConstruct.create("div", {
+          className: "layer-opacity-node esri-widget",
+          title: i18n.map.layer_opacity.title
+        }, parent_node);
+        const opacity_input = domConstruct.create("input", {
+          className: "opacity-input",
+          type: "range", min: 0, max: 1.0, step: 0.01,
+          value: item.layer.opacity
+        }, opacity_node);
+        on(opacity_input, "input", () => {
+          item.layer.opacity = opacity_input.valueAsNumber;
+        });
+        item.layer.watch("opacity", (opacity) => {
+          opacity_input.valueAsNumber = opacity;
+        });
+        opacity_input.valueAsNumber = item.layer.opacity;
+        return opacity_node;
+      };
+      // CREATE TOOLS NODE //
+      const createToolsNode = (item, parent_node) => {
+        // TOOLS NODE //
+        const tools_node = domConstruct.create("div", { className: "esri-widget" }, parent_node, "first");
+
+        // REORDER //
+        const reorder_node = domConstruct.create("div", { className: "inline-block" }, tools_node);
+        const reorder_up_node = domConstruct.create("button", {
+          className: "btn-link esri-icon-arrow-up",
+          title: i18n.map.move_layer_up.title
+        }, reorder_node);
+        const reorder_down_node = domConstruct.create("button", {
+          className: "btn-link esri-icon-arrow-down",
+          title: i18n.map.move_layer_down.title
+        }, reorder_node);
+        on(reorder_up_node, "click", () => {
+          view.map.reorder(item.layer, view.map.layers.indexOf(item.layer) + 1);
+        });
+        on(reorder_down_node, "click", () => {
+          view.map.reorder(item.layer, view.map.layers.indexOf(item.layer) - 1);
+        });
+
+        // REMOVE LAYER //
+        const remove_layer_node = domConstruct.create("button", {
+          className: "btn-link icon-ui-close right",
+          title: i18n.map.remove_layer.title
+        }, tools_node);
+        on.once(remove_layer_node, "click", () => {
+          view.map.remove(item.layer);
+          this.emit("layer-removed", item.layer);
+        });
+
+        // ZOOM TO //
+        const zoom_to_node = domConstruct.create("button", {
+          className: "btn-link icon-ui-zoom-in-magnifying-glass right",
+          title: i18n.map.zoom_to_layer.title
+        }, tools_node);
+        on(zoom_to_node, "click", () => {
+          view.goTo(item.layer.fullExtent);
+        });
+
+        // LAYER DETAILS //
+        const info_node = domConstruct.create("span", {
+          className: "btn-link icon-ui-description icon-ui-blue right",
+          title: i18n.map.view_details.title
+        }, tools_node);
+        on(info_node, "click", () => {
+          this.displayItemDetails(item.layer.portalItem);
+        });
+
+        return tools_node;
+      };
+      // CREATE LEGEND NODE //
+      const createLegendNode = (item, parent_node) => {
+
+        const legend_panel = domConstruct.create("div", { className: "legend-panel esri-widget" }, parent_node);
+
+        const legend = new Legend({
+          container: domConstruct.create("div", {}, legend_panel),
+          view: view,
+          layerInfos: [{ layer: item.layer }]
+        });
+
+        const legend_toggle_node = domConstruct.create("button", {
+          className: "legend-toggle btn-link icon-ui-down",
+          title: i18n.map.legend_toggle.title
+        }, legend_panel);
+        const legend_toggle_label = domConstruct.create("div", {
+          className: "font-size--2 inline-block hide",
+          innerHTML: i18n.map.legend_label.innerHTML
+        }, legend_toggle_node);
+
+        on(legend_toggle_node, "click", () => {
+          domClass.toggle(legend_toggle_label, "hide");
+          domClass.toggle(legend_toggle_node, "legend-toggle-hidden icon-ui-down icon-ui-right");
+          domClass.toggle(legend.domNode, "hide");
+        });
+
+      };
+      // LAYER LIST //
+      const layerList = new LayerList({
+        view: view,
+        container: domConstruct.create("div", {}, layers_panel),
+        listItemCreatedFunction: (evt) => {
+          let item = evt.item;
+          if(item.layer && item.layer.portalItem) {
+
+            // CREATE ITEM PANEL //
+            const panel_node = domConstruct.create("div", { className: "esri-widget" });
+
+            // LAYER TOOLS //
+            createToolsNode(item, panel_node);
+
+            // LAYER OPACITY //
+            createOpacityNode(item, panel_node);
+
+            // LEGEND //
+            if(item.layer.legendEnabled) {
+              createLegendNode(item, panel_node);
+            }
+
+            // SET ITEM PANEL //
+            item.panel = {
+              title: i18n.map.settings_panel.title,
+              className: "esri-icon-settings",
+              content: panel_node
+            };
+          }
+        }
+      });
+      const layerListExpand = new Expand({
+        view: view,
+        content: layers_panel,
+        iconNumber: 0,
+        expandIconClass: "esri-icon-layers",
+        expandTooltip: i18n.map.layerlist_expand.tooltip
+      });
+      view.ui.add(layerListExpand, { position: "top-right", index: 1 });
+
+      // LAYER COUNT //
+      view.map.layers.on("change", () => {
+        layerListExpand.iconNumber = view.map.layers.length;
+      });
+
+      // SYNCHRONIZE LAYERLIST EXPANDS //
+      layerListExpand.watch("expanded", (expanded) => {
+        this.emit("layerlist-expanded", { expanded: expanded, source: layerListExpand });
+      });
+      this.on("layerlist-expanded", evt => {
+        if((evt.source !== layerListExpand) && (evt.expanded !== layerListExpand.expanded)) {
+          layerListExpand.toggle();
+        }
       });
 
     },
@@ -579,7 +583,6 @@ define([
           spin_handle = view.goTo(camera, { animate: false }).then(() => {
             if(spin_direction !== "none") {
               setTimeout(() => {
-                //_spin();
                 requestAnimationFrame(_spin);
               }, (1000 / spin_fps));
             }
@@ -966,11 +969,6 @@ define([
           className: "item-actions text-center text-white",
         }, item_node);
 
-        // const info_btn = domConstruct.create("span", {
-        //   className: "item-action icon-ui-description",
-        //   title: "Display Details"
-        // }, action_node);
-
         const add_btn = domConstruct.create("span", {
           className: "item-action icon-ui-down",
           title: i18n.item.add_to_map.title
@@ -985,10 +983,6 @@ define([
           className: "content-item-title avenir-demi font-size-0 esri-interactive icon-ui-description",
           innerHTML: item.title.trim()
         }, item_node);
-
-        // const info_node = domConstruct.create("span", {
-        //   className: "icon-ui-description margin-left-quarter"
-        // }, item_title_node);
 
         on(item_title_node, "click", () => {
           this.displayItemDetails(item);
@@ -1006,10 +1000,6 @@ define([
         });
 
       });
-
-      // on(dom.byId("clear-link"), "click", () => {
-      //   this.displayItemDetails();
-      // });
 
     },
 
@@ -1165,7 +1155,6 @@ define([
                   default:
                     return promiseUtils.resolve(layer);
                 }
-
               });
             }).otherwise(() => {
               // LAYER WAS NOT LOADED //
@@ -1190,7 +1179,6 @@ define([
      * @param error
      */
     addLayerNotification: function (item, error) {
-
       const notificationsNode = dom.byId("notifications-node");
 
       const alertNode = domConstruct.create("div", {
