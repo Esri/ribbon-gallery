@@ -57,7 +57,7 @@ define([
   return declare([Evented], {
 
     /**
-     *
+     *  CONSTRUCTOR
      */
     constructor: function () {
       // CSS //
@@ -77,6 +77,7 @@ define([
     },
 
     /**
+     * INITIALIZE APPLICATION
      *
      * @param base
      * @returns {*}
@@ -130,6 +131,7 @@ define([
     },
 
     /**
+     * SWITCH VIEW TYPES BETWEEN MAP VIEW AND SCENE VIEW
      *
      * @param views
      */
@@ -150,6 +152,7 @@ define([
     },
 
     /**
+     * INITIALIZE USER SIGN IN
      *
      * @returns {*}
      */
@@ -213,6 +216,7 @@ define([
     },
 
     /**
+     * CREATE A MAP, MAP VIEW, AND SCENE VIEW
      *
      * @returns {Promise}
      */
@@ -249,6 +253,7 @@ define([
     },
 
     /**
+     * CREATE A MAP OR SCENE VIEW
      *
      * @param map
      * @param type
@@ -362,6 +367,10 @@ define([
     },
 
     /**
+     * INITIALIZE LAYER LIST WIDGET
+     *  - REORDER, DETAILS, ZOOM TO, REMOVE
+     *  - OPACITY SLIDER
+     *  - LEGEND
      *
      * @param view
      */
@@ -530,6 +539,7 @@ define([
           }
         }
       });
+      // LAYER LIST EXPAND //
       const layerListExpand = new Expand({
         view: view,
         content: layers_panel,
@@ -557,6 +567,7 @@ define([
     },
 
     /**
+     * SPIN SCENE VIEW
      *
      * @param view
      */
@@ -599,14 +610,14 @@ define([
         }
       };
 
-      let previous_direction = "none";
+      /*let previous_direction = "none";
       this.spin_pause = () => {
         previous_direction = spin_direction;
         enableSpin("none");
       };
       this.spin_resume = () => {
         enableSpin(previous_direction);
-      };
+      };*/
 
       const viewSpinNode = domConstruct.create("div", { className: "view-spin-node" }, view.root);
       const spinLeftBtn = domConstruct.create("span", { className: "spin-btn icon-ui-arrow-left-circled icon-ui-flush font-size-2 esri-interactive", title: i18n.spin_tool.spin_left.title }, viewSpinNode);
@@ -655,6 +666,7 @@ define([
     },
 
     /**
+     * SYNCHRONIZE VIEWS
      *
      * @param views_infos
      */
@@ -746,7 +758,9 @@ define([
     },
 
     /**
-     *
+     *  INITIALIZE LAYER ITEM LIST SCROLLING
+     *  - USING dojo/touch
+     *  - NOT TESTED
      */
     initializeItemListScroll: function () {
 
@@ -837,7 +851,7 @@ define([
         scroll_options.distance = scroll_options.manual_distance;
         scroll_options.auto = false;
       });
-      // AUTO SCROLL //
+      // INITIATE AUTO SCROLL //
       on(dom.byId("auto-scroll-left"), "click", () => {
         if(scroll_options.direction === "LEFT") {
           auto_scroll();
@@ -888,6 +902,7 @@ define([
     },
 
     /**
+     * INITIALIZE GROUP CONTENT
      *
      * @param group_id
      */
@@ -897,19 +912,21 @@ define([
       return this.base.portal.queryGroups({ query: `id:${group_id}` }).then((groupResponse) => {
         // DID WE FIND THE GROUP //
         if(groupResponse.results.length > 0) {
-          // GROUP //
+          // CONFIGURED GROUP //
           const portal_group = groupResponse.results[0];
 
+          // INITIALIZE PANEL CONTENT AND GET FUNCTION TO DISPLAY ITEM DETAILS //
           this.displayItemDetails = this.initializePanelContent(portal_group);
 
           // SEARCH FOR GROUP ITEMS //
           return this.getGroupItems(portal_group, 1).then(() => {
-            // ITEM LIST SCROLL //
+            // CREATE LAYER ITEM LIST SCROLL //
             this.initializeItemListScroll();
           });
 
         } else {
           // WE DIDN'T FIND THE GROUP, SO LET'S FORCE THE USER TO SIGN IN AND TRY AGAIN //
+          // TODO: DO WE STILL NEED THIS?
           return this.initializeUserSignIn(true).always(() => {
             return this.initializeGroupContent(group_id);
           });
@@ -919,6 +936,9 @@ define([
     },
 
     /**
+     * QUERY FOR LAYER ITEMS IN THE GROUP
+     *  - ONLY ONE SEARCH SO MAXIMUM 100 ITEMS RETURNED
+     *  - USES GROUP CONFIGURED SORT PARAMETERS
      *
      * @param portalGroup
      * @param start
@@ -926,77 +946,82 @@ define([
     getGroupItems: function (portalGroup, start) {
 
       // SEARCH QUERY //
+      // TODO: DO WE INCLUDE CURRENT CULTURE IN THE QUERY?
       const layer_search_query = '(type:Service AND typekeywords:(-"Tool" -"Geodata Service" -"Globe Service" -"Database" -"Workflow" -"Service Definition"))';
 
-      // QUERY HANDLE //
-      this.query_items_handle && !this.query_items_handle.isFulfilled() && this.query_items_handle.cancel();
-
       // FIND LAYER ITEMS //
-      return this.query_items_handle = portalGroup.queryItems({
+      return portalGroup.queryItems({
         start: start,
         num: 100,
         sortField: portalGroup.sortField || "title",
         sortOrder: portalGroup.sortOrder || "asc",
         query: layer_search_query
       }).then((queryResults) => {
-        // DISPLAY ITEMS //
-        this.displayItems(queryResults.results);
-        //
-        // TODO: GET MORE RESULTS ???
-        //
+        // DISPLAY LAYER ITEMS //
+        this.displayLayerItems(queryResults.results);
+        // TODO: GET MORE RESULTS?
         return queryResults;
       });
     },
 
     /**
+     * CREATE A SCROLLABLE LIST OF LAYER ITEMS NODES //
      *
-     * @param items
+     * @param layer_items
      */
-    displayItems: function (items) {
+    displayLayerItems: function (layer_items) {
 
-      items.forEach(item => {
+      // CREATE LAYER ITEM NODES //
+      layer_items.forEach(layer_item => {
 
+        // LAYER ITEM NODE //
         const item_node = domConstruct.create("div", {
           className: "content-item",
         }, "content-container");
 
+        // THUMBNAIL NODE //
         const item_img = domConstruct.create("img", {
           className: "content-item-img",
-          src: item.thumbnailUrl
+          src: layer_item.thumbnailUrl
         }, item_node);
 
+        // ACTION NODE //
         const action_node = domConstruct.create("span", {
           className: "item-actions text-center text-white",
         }, item_node);
 
+        // ADD BUTTON //
         const add_btn = domConstruct.create("span", {
           className: "item-action icon-ui-down",
           title: i18n.item.add_to_map.title
         }, action_node);
 
+        // ADD VISIBLE BUTTON //
         const add_visible_btn = domConstruct.create("span", {
           className: "item-action leader-half esri-icon-visible",
           title: i18n.item.add_to_map_only_visible.title
         }, action_node);
 
+        // TITLE NODE //
         const item_title_node = domConstruct.create("div", {
           className: "content-item-title avenir-demi font-size-0 esri-interactive icon-ui-description",
-          innerHTML: item.title.trim()
+          innerHTML: layer_item.title.trim()
         }, item_node);
 
+        // DISPLAY ITEM DETAILS //
         on(item_title_node, "click", () => {
-          this.displayItemDetails(item);
+          this.displayItemDetails(layer_item);
         });
-
+        // ADD LAYER //
         on(add_btn, "click", () => {
-          this.addItemToMap(item);
-          this.displayItemDetails(item);
+          this.addItemToMap(layer_item);
+          this.displayItemDetails(layer_item);
         });
-
+        // ADD LAYER VISIBLE //
         on(add_visible_btn, "click", () => {
           this.setAllLayersVisibility(false);
-          this.addItemToMap(item);
-          this.displayItemDetails(item);
+          this.addItemToMap(layer_item);
+          this.displayItemDetails(layer_item);
         });
 
       });
@@ -1004,11 +1029,14 @@ define([
     },
 
     /**
+     * SET PANEL CONTENT TO LAYER ITEM OR GROUP
      *
      * @param portal_group
+     * @returns {function(*=)}
      */
     initializePanelContent: function (portal_group) {
 
+      // UPDATE THE PANEL CONTENT WITH INFORMATION ABOUT A LAYER ITEM OR THE CONFIGURED GROUP //
       const display_content = (item_or_group) => {
         if(item_or_group) {
           // IS ITEM OR GROUP //
@@ -1024,24 +1052,27 @@ define([
         }
       };
 
-      // RESET CONTENT //
+      // RESET PANEL CONTENT //
       on(dom.byId("content-reset-node"), "click", () => {
         display_content(portal_group);
       });
 
-      // SET INITIAL CONTENT TO GROUP //
+      // SET INITIAL PANEL CONTENT TO GROUP //
       display_content(portal_group);
 
       /**
-       * SET CONTENT TO ITEM
+       * SET PANEL CONTENT TO LAYER ITEM
        */
-      return (item) => {
-        display_content(item || portal_group);
+      return (layer_item) => {
+        // IF NO ITEM IS PROVIDED THEN USE THE CONFIGURED GROUP //
+        display_content(layer_item || portal_group);
       }
 
     },
 
     /**
+     * ADD ITEM TO MAP
+     *  - IF THE LAYER IS ALREADY IN THE MAP, JUST MAKE SURE IT'S VISIBLE
      *
      * @param map
      */
@@ -1083,6 +1114,7 @@ define([
     },
 
     /**
+     * MAKE SURE TO RETURN A LOADED PortalItem
      *
      * @param itemLike
      * @returns {Promise<PortalItem>}
@@ -1090,7 +1122,7 @@ define([
      */
     _getItem: function (itemLike) {
       if(itemLike.declaredClass === "esri.portal.PortalItem") {
-        return promiseUtils.resolve(itemLike);
+        return itemLike.loaded ? promiseUtils.resolve(itemLike) : itemLike.load();
       } else {
         const item = new PortalItem({ id: itemLike.id });
         return item.load();
@@ -1098,6 +1130,8 @@ define([
     },
 
     /**
+     * GET THE LAYER FROM THE PortalItem
+     *  - APPLY OVERRIDES IF AVAILABLE
      *
      * @param itemLike
      * @returns {*}
@@ -1112,26 +1146,21 @@ define([
           return Layer.fromPortalItem({ portalItem: item }).then((layer) => {
             // LOAD LAYER //
             return layer.load().then(() => {
-
-              //
               // FETCH ITEM OVERRIDES //
-              //
               return layer.portalItem.fetchData().then((item_data) => {
-                // DOES LAYER HAVE ANY OVERRIDES //
+                // APPLY IF LAYER HAVE ANY OVERRIDES //
                 if(item_data != null) {
-                  // APPLY OVERRIDES //
-                  //console.info(item.title, item.type, item_data);
-
+                  // VISIBILITY //
                   if(item_data.hasOwnProperty("visibility")) {
                     layer.visible = item_data.visibility;
                   }
+                  // OPACITY //
                   if(item_data.hasOwnProperty("opacity")) {
                     layer.opacity = item_data.opacity;
                   }
-
                   switch (layer.type) {
                     case "map-image":
-                      // 4.8 //
+                      // SUBLAYER VISIBILITY - 4.8 //
                       if(item_data.hasOwnProperty("visibleLayers")) {
                         const visible_layers = item_data.visibleLayers || [];
                         layer.allSublayers.forEach(sublayer => {
@@ -1142,9 +1171,6 @@ define([
                   }
                 }
 
-                //
-                // LAYER LOADED OK //
-                //
                 switch (layer.type) {
                   case "unknown":
                     // LAYER IS UNKNOWN //
@@ -1153,6 +1179,7 @@ define([
                     // LAYER IS UNSUPPORTED //
                     return promiseUtils.reject(new Error(lang.replace(i18n.errors.layer.layer_unsupported_template, item)));
                   default:
+                    // LAYER LOADED OK //
                     return promiseUtils.resolve(layer);
                 }
               });
@@ -1174,11 +1201,12 @@ define([
     },
 
     /**
+     * ADD A LAYER ITEM NOTIFICATION
      *
-     * @param item
+     * @param layer_item
      * @param error
      */
-    addLayerNotification: function (item, error) {
+    addLayerNotification: function (layer_item, error) {
       const notificationsNode = dom.byId("notifications-node");
 
       const alertNode = domConstruct.create("div", {
@@ -1190,10 +1218,10 @@ define([
         domConstruct.destroy(alertNode);
       });
 
-      domConstruct.create("div", { innerHTML: error ? error.message : lang.replace(i18n.notifications.layer_added_template, item) }, alertNode);
+      domConstruct.create("div", { innerHTML: error ? error.message : lang.replace(i18n.notifications.layer_added_template, layer_item) }, alertNode);
 
       if(error != null) {
-        const itemDetailsPageUrl = `${this.base.portal.url}/home/item.html?id=${item.id}`;
+        const itemDetailsPageUrl = `${this.base.portal.url}/home/item.html?id=${layer_item.id}`;
         domConstruct.create("a", { innerHTML: i18n.notifications.view_details.innerHTML, target: "_blank", href: itemDetailsPageUrl }, alertNode);
       } else {
         setTimeout(() => {
@@ -1207,7 +1235,8 @@ define([
     },
 
     /**
-     * https://doc.arcgis.com/en/arcgis-online/reference/use-url-parameters.htm
+     * OPEN THE MAP VIEWER USING THE CURRENT MAP SETTINGS AND LAYERS
+     *  - https://doc.arcgis.com/en/arcgis-online/reference/use-url-parameters.htm
      *
      * @param map_infos
      */
