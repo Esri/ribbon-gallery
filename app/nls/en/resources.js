@@ -11,7 +11,7 @@ define({
     "left_toggle": { title: "Toggle Content Panel" },
     "up_toggle": { title: "Toggle Items Panel" },
     "basemapExpand": { tooltip: "Basemaps" },
-    "layers_panel": { label: "Layers" },
+    "layers_panel": { innerHTML: "Layers" },
     "remove_layers": { title: "Remove All Layers" },
     "show_layers": { title: "Show All Layers" },
     "hide_layers": { title: "Hide All Layers" },

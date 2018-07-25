@@ -379,7 +379,7 @@ define([
       // LAYERS PANEL //
       const layers_panel = domConstruct.create("div", { className: "panel panel-no-padding" });
       const action_node = domConstruct.create("div", { className: "panel panel-dark-blue panel-no-padding padding-left-half padding-right-1 font-size-0" }, layers_panel);
-      domConstruct.create("span", { innerHTML: i18n.map.layers_panel.label }, action_node);
+      domConstruct.create("span", { innerHTML: i18n.map.layers_panel.innerHTML }, action_node);
 
       // REMOVE ALL LAYERS //
       const remove_layers_btn = domConstruct.create("span", {
