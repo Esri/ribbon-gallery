@@ -390,7 +390,6 @@ define([
         view.map.layers.removeAll();
         this.displayItemDetails();
       });
-
       // SET LAYERS VISIBILITY //
       const show_layers_btn = domConstruct.create("span", {
         className: "icon-ui-checkbox-checked esri-interactive right",
@@ -610,15 +609,6 @@ define([
         }
       };
 
-      /*let previous_direction = "none";
-      this.spin_pause = () => {
-        previous_direction = spin_direction;
-        enableSpin("none");
-      };
-      this.spin_resume = () => {
-        enableSpin(previous_direction);
-      };*/
-
       const viewSpinNode = domConstruct.create("div", { className: "view-spin-node" }, view.root);
       const spinLeftBtn = domConstruct.create("span", { className: "spin-btn icon-ui-arrow-left-circled icon-ui-flush font-size-2 esri-interactive", title: i18n.spin_tool.spin_left.title }, viewSpinNode);
       const alwaysUpBtn = domConstruct.create("span", { id: "always-up-btn", className: "spin-btn icon-ui-compass icon-ui-flush font-size--1 esri-interactive", title: i18n.spin_tool.always_up.title }, viewSpinNode);
@@ -650,18 +640,6 @@ define([
         domClass.toggle(alwaysUpBtn, "selected");
         always_up = domClass.contains(alwaysUpBtn, "selected");
       });
-
-      /*view.on("layerview-create", (evt) => {
-        const layerView = evt.layerView;
-        layerView.when(() => {
-          this.spin_pause();
-          watchUtils.whenTrueOnce(layerView, "updating", () => {
-            watchUtils.whenFalseOnce(layerView, "updating", () => {
-              this.spin_resume();
-            });
-          });
-        });
-      });*/
 
     },
 
