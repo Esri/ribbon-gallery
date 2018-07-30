@@ -361,6 +361,7 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
          */
         Main.prototype.initializeLayerList = function (view) {
             var _this = this;
+            view = (view && view.type === "2d") ? view : view;
             // LAYERS PANEL //
             var layers_panel = domConstruct.create("div", { className: "panel panel-no-padding" });
             var action_node = domConstruct.create("div", { className: "panel panel-dark-blue panel-no-padding padding-left-half padding-right-1 font-size-0" }, layers_panel);
@@ -446,9 +447,7 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                     title: i18n.map.zoom_to_layer.title
                 }, tools_node);
                 zoom_to_node.addEventListener("click", function () {
-                    console.log("item extent", item.layer.fullExtent);
-                    // KELLY TODO goto 
-                    // view.goTo(item.layer.fullExtent);
+                    view.goTo(item.layer.fullExtent);
                 });
                 // LAYER DETAILS //
                 var info_node = domConstruct.create("span", {

@@ -415,7 +415,8 @@ class Main extends (Evented) {
      *
      * @param view
      */
-    initializeLayerList(view: MapView | SceneView) {
+    initializeLayerList(view: any) {
+        view = (view && view.type === "2d") ? view as MapView : view as SceneView;
         // LAYERS PANEL //
         const layers_panel = domConstruct.create("div", { className: "panel panel-no-padding" });
         const action_node = domConstruct.create("div", { className: "panel panel-dark-blue panel-no-padding padding-left-half padding-right-1 font-size-0" }, layers_panel);
@@ -507,10 +508,7 @@ class Main extends (Evented) {
                 title: i18n.map.zoom_to_layer.title
             }, tools_node);
             zoom_to_node.addEventListener("click", () => {
-                console.log("item extent", item.layer.fullExtent);
-                // KELLY TODO goto 
-
-                // view.goTo(item.layer.fullExtent);
+                view.goTo(item.layer.fullExtent);
             });
 
             // LAYER DETAILS //
