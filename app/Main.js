@@ -287,7 +287,7 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                                 domClass.toggle(listToggleBtn, "icon-ui-up-arrow icon-ui-down-arrow");
                                 // TOGGLE VISIBILITY OF CLOSABLE PANELS //
                                 up_container.classList.toggle("collapsed");
-                                document.getElementsByClassName("auto-scroll-container")[0].classList.toggle("collapsed");
+                                document.getElementById("auto-scroll-container").classList.toggle("collapsed");
                             });
                             updating_node = domConstruct.create("div", { className: "view-loading-node loader text-center padding-leader-0 padding-trailer-0" });
                             updating_node.innerHTML = "<div class=\"loader-bars\"></div><div class=\"loader-text font-size--3\">" + i18n.notifications.updating + " ...</div>";

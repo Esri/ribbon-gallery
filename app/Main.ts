@@ -335,7 +335,7 @@ class Main extends (Evented) {
             domClass.toggle(listToggleBtn, "icon-ui-up-arrow icon-ui-down-arrow");
             // TOGGLE VISIBILITY OF CLOSABLE PANELS //
             up_container.classList.toggle("collapsed");
-            document.getElementsByClassName("auto-scroll-container")[0].classList.toggle("collapsed");
+            document.getElementById("auto-scroll-container").classList.toggle("collapsed");
         });
         // VIEW UPDATING //
         const updating_node = domConstruct.create("div", { className: "view-loading-node loader text-center padding-leader-0 padding-trailer-0" });
