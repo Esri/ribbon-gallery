@@ -1,0 +1,28 @@
+{
+  "name": "ribbon-gallery",
+  "version": "1.0.0",
+  "description": "A configurable app template that displays group content",
+  "main": "index.js",
+  "scripts": {
+    "dev:ts": "tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArcGIS/ribbon-gallery.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ArcGIS/ribbon-gallery/issues"
+  },
+  "homepage": "https://github.com/ArcGIS/ribbon-gallery#readme",
+  "dependencies": {
+    "@types/arcgis-js-api": "^4.8.1",
+    "npm": "^6.0.0"
+  },
+  "devDependencies": {
+    "@esri/application-base-js": "0.0.2",
+    "dojo-typings": "^1.11.9"
+  }
+}

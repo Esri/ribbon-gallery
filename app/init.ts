@@ -20,15 +20,16 @@
   limitations under the License.​
 */
 
-export function setPageLocale(locale: string): void {
-  document.documentElement.lang = locale;
-}
+import applicationBaseConfig = require("dojo/text!config/applicationBase.json");
+import applicationConfig = require("dojo/text!config/application.json");
 
-export function setPageDirection(direction: string): void {
-  const dirNode = document.getElementsByTagName("html")[0];
-  dirNode.setAttribute("dir", direction);
-}
+import ApplicationBase = require("ApplicationBase/ApplicationBase");
 
-export function setPageTitle(title: string): void {
-  document.title = title;
-}
+import Application = require("./Main");
+
+const Main = new Application();
+
+new ApplicationBase({
+  config: applicationConfig,
+  settings: applicationBaseConfig
+}).load().then(base => Main.init(base));
