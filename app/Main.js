@@ -322,7 +322,12 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                                 ]).then(function (_a) {
                                     var Search = _a[0];
                                     var search = new Search({ view: view, searchTerm: _this.base.config.searchTerm || "" });
-                                    view.ui.add(search, { position: _this.base.config.searchPosition, index: 0 });
+                                    var searchExpand = new Expand({
+                                        view: view,
+                                        mode: "floating",
+                                        content: search
+                                    });
+                                    view.ui.add(searchExpand, { position: _this.base.config.searchPosition, index: 0 });
                                 });
                             }
                             if (this.base.config.basemaps) {
@@ -521,6 +526,7 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             var layerListExpand = new Expand({
                 view: view,
                 content: layers_panel,
+                mode: "floating",
                 iconNumber: 0,
                 // icon class comes from parent iconClass (LayerList)
                 expandTooltip: i18n.map.layerlist_expand.tooltip
@@ -910,18 +916,18 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                     className: "item-actions text-center text-white",
                 }, item_node);
                 // ADD BUTTON //
-                var add_btn = domConstruct.create("span", {
-                    className: "item-action icon-ui-down",
-                    title: i18n.item.add_to_map.title
+                var add_btn = domConstruct.create("button", {
+                    className: "item-action esri-icon-down btn btn-small btn-transparent",
+                    title: i18n.item.add_to_map.title,
                 }, action_node);
                 // ADD VISIBLE BUTTON //
-                var add_visible_btn = domConstruct.create("span", {
-                    className: "item-action leader-half esri-icon-visible",
+                var add_visible_btn = domConstruct.create("button", {
+                    className: "item-action esri-icon-visible btn btn-small btn-transparent",
                     title: i18n.item.add_to_map_only_visible.title
                 }, action_node);
                 // TITLE NODE //
-                var item_title_node = domConstruct.create("div", {
-                    className: "content-item-title avenir-demi font-size-0 esri-interactive icon-ui-description",
+                var item_title_node = domConstruct.create("button", {
+                    className: "content-item-title btn btn-transparent avenir-demi font-size-0 esri-interactive icon-ui-description",
                     innerHTML: layer_item.title.trim()
                 }, item_node);
                 // DISPLAY ITEM DETAILS //
