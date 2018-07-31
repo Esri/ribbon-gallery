@@ -43,7 +43,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", "esri/core/promiseUtils", "esri/core/watchUtils", "esri/core/requireUtils", "esri/portal/Portal", "esri/portal/PortalItem", "esri/layers/Layer", "esri/Map", "esri/views/MapView", "esri/views/SceneView", "esri/widgets/Expand", "esri/widgets/Home", "esri/widgets/Compass", "esri/widgets/Legend", "esri/widgets/LayerList", "esri/identity/IdentityManager", "dojo/dom-class", "dojo/dom-geometry", "dojo/dom-construct", "dojo/touch", "dojo/on", "dojo/_base/lang", "ApplicationBase/support/domHelper"], function (require, exports, i18n, Evented, promiseUtils, watchUtils, requireUtils, Portal, PortalItem, Layer, Map, MapView, SceneView, Expand, Home, Compass, Legend, LayerList, IdentityManager, domClass, domGeom, domConstruct, touch, on, lang, domHelper_1) {
+define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", "esri/core/promiseUtils", "esri/core/watchUtils", "esri/core/requireUtils", "esri/portal/Portal", "esri/portal/PortalItem", "esri/layers/Layer", "esri/Map", "esri/views/MapView", "esri/views/SceneView", "esri/widgets/Expand", "esri/widgets/Home", "esri/widgets/Compass", "esri/widgets/Legend", "esri/widgets/LayerList", "esri/identity/IdentityManager", "esri/identity/OAuthInfo", "dojo/dom-class", "dojo/dom-geometry", "dojo/dom-construct", "dojo/touch", "dojo/on", "dojo/_base/lang", "ApplicationBase/support/domHelper"], function (require, exports, i18n, Evented, promiseUtils, watchUtils, requireUtils, Portal, PortalItem, Layer, Map, MapView, SceneView, Expand, Home, Compass, Legend, LayerList, IdentityManager, OAuthInfo, domClass, domGeom, domConstruct, touch, on, lang, domHelper_1) {
     "use strict";
     var CSS = {
         loading: "configurable-application--loading",
@@ -85,8 +85,13 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             Object.keys(i18n.ui).forEach(function (node_id) {
                 var ui_component = document.getElementById(node_id);
                 if (ui_component) {
-                    ui_component.innerHTML = i18n.ui[node_id].innerHTML || "";
-                    ui_component.title = i18n.ui[node_id].title || "";
+                    console.log("UI-component", i18n.ui[node_id].innerHTML);
+                    if (i18n.ui[node_id].innerHTML) {
+                        ui_component.innerHTML = i18n.ui[node_id].innerHTML;
+                    }
+                    if (i18n.ui[node_id].title) {
+                        ui_component.title = i18n.ui[node_id].title || "";
+                    }
                 }
             });
             // APP TITLE // 
@@ -145,6 +150,11 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
          */
         Main.prototype.initializeUserSignIn = function (force_sign_in) {
             var _this = this;
+            var info = new OAuthInfo({
+                appId: this.base.config.oauthappid,
+                popup: false
+            });
+            IdentityManager.registerOAuthInfos([info]);
             var checkSignInStatus = function () {
                 return IdentityManager.checkSignInStatus(_this.base.portal.url).then(userSignIn);
             };
@@ -268,8 +278,8 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                             return [3 /*break*/, 4];
                         case 4:
                             left_container = document.getElementById("item-info-container");
-                            panelToggleBtn = domConstruct.create("div", {
-                                className: "panel-toggle-left icon-ui-left-triangle-arrow icon-ui-flush font-size-1",
+                            panelToggleBtn = domConstruct.create("button", {
+                                className: "panel-toggle-left btn btn-transparent icon-ui-left-triangle-arrow icon-ui-flush font-size-1",
                                 title: i18n.map.left_toggle.title
                             }, view.root);
                             panelToggleBtn.addEventListener("click", function () {
@@ -279,8 +289,8 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                                 domClass.toggle(left_container, "collapsed");
                             });
                             up_container = document.getElementById("items-list-panel");
-                            listToggleBtn = domConstruct.create("div", {
-                                className: "panel-toggle-up icon-ui-up-arrow icon-ui-flush font-size-1",
+                            listToggleBtn = domConstruct.create("button", {
+                                className: "panel-toggle-up icon-ui-up-arrow btn btn-transparent icon-ui-flush font-size-1",
                                 title: i18n.map.up_toggle.title
                             }, view.root);
                             listToggleBtn.addEventListener("click", function () {
@@ -887,7 +897,7 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             // CREATE LAYER ITEM NODES //
             layer_items.forEach(function (layer_item) {
                 // LAYER ITEM NODE //
-                var item_node = domConstruct.create("div", {
+                var item_node = domConstruct.create("li", {
                     className: "content-item",
                 }, "content-container");
                 // THUMBNAIL NODE //
@@ -944,7 +954,7 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                 if (item_or_group) {
                     // IS ITEM OR GROUP //
                     var type = (item_or_group.declaredClass === "esri.portal.PortalGroup") ? "group" : "item";
-                    domClass.toggle("content-reset-node", "btn-disabled", (type === "group"));
+                    domClass.toggle("content-reset-node", "hide", (type === "group"));
                     // TITLE //
                     document.getElementById("content-title-label").innerHTML = item_or_group.title;
                     document.getElementById("content-title-label").title = item_or_group.snippet || "";

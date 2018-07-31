@@ -42,6 +42,7 @@ import Legend = require("esri/widgets/Legend");
 import LayerList = require("esri/widgets/LayerList");
 
 import IdentityManager = require("esri/identity/IdentityManager");
+import OAuthInfo = require("esri/identity/OAuthInfo");
 
 // We can phase these out to use native methods (if browser support is good) 
 import domClass = require("dojo/dom-class");
@@ -110,8 +111,13 @@ class Main extends (Evented) {
         Object.keys(i18n.ui).forEach(node_id => {
             const ui_component = document.getElementById(node_id);
             if (ui_component) {
-                ui_component.innerHTML = i18n.ui[node_id].innerHTML || "";
-                ui_component.title = i18n.ui[node_id].title || "";
+                console.log("UI-component",i18n.ui[node_id].innerHTML);
+                if(i18n.ui[node_id].innerHTML){
+                    ui_component.innerHTML = i18n.ui[node_id].innerHTML;
+                }
+                if(i18n.ui[node_id].title ){
+                    ui_component.title = i18n.ui[node_id].title || "";
+                }
             }
         });
 
@@ -183,8 +189,13 @@ class Main extends (Evented) {
      * @returns {*}
      */
     initializeUserSignIn(force_sign_in?): any {
-
+        const info = new OAuthInfo({
+            appId: this.base.config.oauthappid,
+            popup: false
+        });
+        IdentityManager.registerOAuthInfos([info]);
         const checkSignInStatus = () => {
+
             return IdentityManager.checkSignInStatus(this.base.portal.url).then(userSignIn);
         };
         IdentityManager.on("credential-create", checkSignInStatus);
@@ -311,8 +322,8 @@ class Main extends (Evented) {
         // LEFT CONTAINER // 
         const left_container = document.getElementById("item-info-container");
         // PANEL TOGGLE // 
-        const panelToggleBtn = domConstruct.create("div", {
-            className: "panel-toggle-left icon-ui-left-triangle-arrow icon-ui-flush font-size-1",
+        const panelToggleBtn = domConstruct.create("button", {
+            className: "panel-toggle-left btn btn-transparent icon-ui-left-triangle-arrow icon-ui-flush font-size-1",
             title: i18n.map.left_toggle.title
         }, view.root);
 
@@ -325,8 +336,8 @@ class Main extends (Evented) {
         // UP CONTAINER //
         const up_container = document.getElementById("items-list-panel");
         // PANEL TOGGLE //
-        const listToggleBtn = domConstruct.create("div", {
-            className: "panel-toggle-up icon-ui-up-arrow icon-ui-flush font-size-1",
+        const listToggleBtn = domConstruct.create("button", {
+            className: "panel-toggle-up icon-ui-up-arrow btn btn-transparent icon-ui-flush font-size-1",
             title: i18n.map.up_toggle.title
         }, view.root);
 
@@ -967,7 +978,7 @@ class Main extends (Evented) {
         // CREATE LAYER ITEM NODES //
         layer_items.forEach(layer_item => {
             // LAYER ITEM NODE //
-            const item_node = domConstruct.create("div", {
+            const item_node = domConstruct.create("li", {
                 className: "content-item",
             }, "content-container");
 
@@ -1030,7 +1041,7 @@ class Main extends (Evented) {
             if (item_or_group) {
                 // IS ITEM OR GROUP //
                 const type = (item_or_group.declaredClass === "esri.portal.PortalGroup") ? "group" : "item";
-                domClass.toggle("content-reset-node", "btn-disabled", (type === "group"));
+                domClass.toggle("content-reset-node", "hide", (type === "group"));
                 // TITLE //
                 document.getElementById("content-title-label").innerHTML = item_or_group.title;
                 document.getElementById("content-title-label").title = item_or_group.snippet || "";

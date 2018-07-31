@@ -1,6 +1,12 @@
 define({
   root: {
-    ui: {
+    ui: {"auto-scroll-right": {
+      title: "Auto scroll right"
+    },"auto-scroll-left": {
+      title: "Auto scroll left"
+    },"auto-scroll-reset": {
+      title: "Auto scroll reset"
+    },
       "view-type-label-2D": {
         innerHTML: "2D"
       },
@@ -21,6 +27,12 @@ define({
       },
       "content-reset-node": {
         title: "reset"
+      },
+      "items-list-right": {
+        title: "next"
+      },
+      "items-list-left": {
+        title: "previous"
       }
     },
     map: {
