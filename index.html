@@ -28,8 +28,7 @@
       <div class="top-nav-content">
         <!-- APP TITLE -->
         <div class="top-nav-title margin-left-2 margin-right-4">
-          <span id="app-title-node" class="text-white font-size-4"></span>
-          <mark id="beta-label" class="label label-red margin-left-half">BETA</mark>
+          <h1 id="app-title-node" class="text-white font-size-4"></h1>
         </div>
         <!-- VIEW DISPLAY TYPE SWITCH -->
         <span class="top-nav-list leader-half margin-left-4">
@@ -44,13 +43,13 @@
         <div class="leader-quarter margin-right-2 right">
           <!--AUTO-SCROLL -->
           <div id="auto-scroll-container" class="top-nav-list leader-0 trailer-0 margin-right-half esri-interactive">
-            <span id="auto-scroll-left" class="ui-btn font-size-2 icon-ui-expand icon-ui-flush icon-ui-light-blue"></span>
-            <span id="auto-scroll-reset" class="pulse font-size-2 icon-ui-globe icon-ui-flush"></span>
-            <span id="auto-scroll-right" class="ui-btn font-size-2 icon-ui-collapse icon-ui-flush icon-ui-light-blue"></span>
+            <button id="auto-scroll-left" class="ui-btn btn-small btn btn-transparent font-size-2 icon-ui-expand icon-ui-flush icon-ui-light-blue"></button>
+            <button id="auto-scroll-reset" class="pulse btn-small btn btn-transparent padding-left-0 padding-right-0 font-size-2 icon-ui-globe icon-ui-flush"></button>
+            <button id="auto-scroll-right" class="ui-btn btn-small btn btn-transparent font-size-2 icon-ui-collapse icon-ui-flush icon-ui-light-blue"></button>
           </div>
           <!-- SIGN IN NODE -->
           <nav id="sign-in-node" class="top-nav-list inline-block" role="navigation" aria-labelledby="usernav">
-            <span id="sign-in-label" class="top-nav-link text-white esri-interactive icon-ui-user margin-left-1"></span>
+            <button id="sign-in-label" class="btn btn-transparent btn-link top-nav-link text-white esri-interactive icon-ui-user margin-left-1"></button>
           </nav>
           <!-- USER NODE -->
           <div id="user-node" class="dropdown js-dropdown hide">
@@ -75,14 +74,18 @@
       <!-- ITEMS LIST PANEL -->
       <div id="items-list-panel" class="">
         <!-- SCROLL LEFT -->
-        <div id="items-list-left" class="ui-btn btn-link icon-ui-left icon-ui-flush icon-ui-light-blue font-size-7 leader-1 esri-interactive"></div>
+        <button id="items-list-left" class="ui-btn btn-transparent nav-btn font-size-7 leader-1 esri-interactive">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" class="svg-icon"><path d="M25 28h-5L8 16 20 4h5L13 16l12 12z"/></svg>
+        </button>
         <!-- ITEMS LIST CONTAINER -->
         <div id="content-container-parent" class="trailer-0">
           <!-- ITEMS LIST -->
-          <div id="content-container" class="trailer-0"></div>
+          <ul id="content-container" class="trailer-0"></ul>
         </div>
         <!-- SCROLL RIGHT -->
-        <div id="items-list-right" class="ui-btn btn-link icon-ui-right icon-ui-flush icon-ui-light-blue font-size-7 leader-1 esri-interactive"></div>
+        <button id="items-list-right" class="ui-btn btn-transparent nav-btn font-size-7  leader-1 esri-interactive">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" class="svg-icon"><path d="M7 4h5l12 12-12 12H7l12-12L7 4z"/></svg>
+        </button>
       </div>
     </header>
     <!-- MAIN CONTAINER -->
@@ -95,7 +98,7 @@
             <span id="content-title-label" class="text-blue font-size-2"></span>
           </a>
           <div class="right">
-            <div id="content-reset-node" class="icon-ui-close esri-interactive btn-disabled"></div>
+            <div id="content-reset-node" class="icon-ui-close esri-interactive hide"></div>
           </div>
         </div>
         <!-- CONTENT PANEL -->
