@@ -149,15 +149,17 @@ body {
 
 .content-item-title {
   position: relative;
-  top: -1.5em;
+  top: -2.5em;
   padding: 0 5px;
   color: #eee;
   opacity: 0.5;
   transition: all 1s linear;
+  white-space: normal;
 }
 
 .content-item:hover .content-item-title {
   /*text-shadow : 0 1px 2px rgba(0, 0, 0, 0.3);*/
+  color:#fff;
   opacity: 1.0;
   transition: all 0.5s linear;
 }
@@ -166,14 +168,20 @@ body {
   display: inline-block;
   width: 100%;
   position: relative;
-  top: -34px;
+  top: -44px;
   left: 2px;
   opacity: 0.0;
   background: rgba(0, 69, 117, 0.7);
   transition: all 1s linear;
+  line-height: 1.5em;
+  font-size: 16px;
+  color:#fff;
 }
-
-.content-item:hover .item-actions {
+.content-item:hover .item-action{
+  color:#fff;
+}
+/* Display add layer buttons on hover or focus */
+.content-item:hover .item-actions, .content-item:focus .item-actions{
   opacity: 1.0;
   transition: all 0.5s linear;
 }
@@ -199,6 +207,12 @@ body {
   flex-direction: column;
   transition: opacity 0.5s 0.5s ease-in-out, padding 0.5s ease-in-out, width 0.5s ease-in-out;
 }
+@media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
+  /* On smaller screens increase size of side panel so content is readable*/
+    #item-info-container{
+      width:80%;
+    }
+  }
 
 #item-info-container.collapsed {
   width: 0;
@@ -437,12 +451,26 @@ body {
   line-height: 1.5rem;
 }
 .nav-btn{
-  cursor: pointer;
   height: 32px;
+  width:60px;
 }
 .nav-btn .svg-icon{
   fill:#56a5d8;
 }
 .nav-btn:hover .svg-icon{
   fill:#71b3de;
+}
+/*Add a little space between the panel close buttons and the esri ui
+mostly noticable on small screen sizes*/
+
+.esri-ui-top-left{
+  top:8px;
+  left:5px;
+}
+.esri-ui-top-right{
+  top:8px;
+  right:5px;
+}
+#sign-in-label{
+  padding:1.6rem 0 calc(1.6rem - 4px)0;
 }

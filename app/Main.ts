@@ -374,7 +374,12 @@ class Main extends (Evented) {
                 Search
             ]) => {
                 const search = new Search({ view, searchTerm: this.base.config.searchTerm || "" });
-                view.ui.add(search, { position: this.base.config.searchPosition, index: 0 });
+                const searchExpand = new Expand({
+                    view,
+                    mode: "floating",
+                    content: search
+                });
+                view.ui.add(searchExpand, { position: this.base.config.searchPosition, index: 0 });
             });
         }
         if (this.base.config.basemaps) {
@@ -595,6 +600,7 @@ class Main extends (Evented) {
         const layerListExpand = new Expand({
             view,
             content: layers_panel,
+            mode:"floating",
             iconNumber: 0,
             // icon class comes from parent iconClass (LayerList)
             expandTooltip: i18n.map.layerlist_expand.tooltip
@@ -994,20 +1000,20 @@ class Main extends (Evented) {
             }, item_node);
 
             // ADD BUTTON //
-            const add_btn = domConstruct.create("span", {
-                className: "item-action icon-ui-down",
-                title: i18n.item.add_to_map.title
+            const add_btn = domConstruct.create("button", {
+                className: "item-action esri-icon-down btn btn-small btn-transparent",
+                title: i18n.item.add_to_map.title,
             }, action_node);
 
             // ADD VISIBLE BUTTON //
-            const add_visible_btn = domConstruct.create("span", {
-                className: "item-action leader-half esri-icon-visible",
+            const add_visible_btn = domConstruct.create("button", {
+                className: "item-action esri-icon-visible btn btn-small btn-transparent",
                 title: i18n.item.add_to_map_only_visible.title
             }, action_node);
 
             // TITLE NODE //
-            const item_title_node = domConstruct.create("div", {
-                className: "content-item-title avenir-demi font-size-0 esri-interactive icon-ui-description",
+            const item_title_node = domConstruct.create("button", {
+                className: "content-item-title btn btn-transparent avenir-demi font-size-0 esri-interactive icon-ui-description",
                 innerHTML: layer_item.title.trim()
             }, item_node);
 
