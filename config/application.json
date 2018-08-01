@@ -7,6 +7,7 @@
   "searchPosition": "top-left",
   "basemaps": true,
   "basemapsPosition": "top-left",
+  "spinGlobe":false,
   "appid": "",
   "group": "37b76860fe0d4481ad12f13db103d54c",
   "title": "Ribbon Gallery",

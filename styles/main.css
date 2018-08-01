@@ -418,8 +418,9 @@ body {
 }
 
 .spin-btn {
-  margin: 0 5px;
   color: #999;
+  margin:0 5px;
+  padding:0;
 }
 
 .spin-btn:hover,
@@ -432,6 +433,7 @@ body {
   vertical-align: text-top;
   line-height: 1.1em;
   margin: 0 2px;
+  color: #999;
 }
 
 .zoom-view-node {
@@ -471,6 +473,6 @@ mostly noticable on small screen sizes*/
   top:8px;
   right:5px;
 }
-#sign-in-label{
+.auth-label{
   padding:1.6rem 0 calc(1.6rem - 4px)0;
 }

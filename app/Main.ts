@@ -42,7 +42,6 @@ import Legend = require("esri/widgets/Legend");
 import LayerList = require("esri/widgets/LayerList");
 
 import IdentityManager = require("esri/identity/IdentityManager");
-import OAuthInfo = require("esri/identity/OAuthInfo");
 
 // We can phase these out to use native methods (if browser support is good) 
 import domClass = require("dojo/dom-class");
@@ -53,6 +52,7 @@ import on = require("dojo/on");
 import lang = require("dojo/_base/lang");
 
 import esri = __esri;
+declare var window:any;
 
 const CSS = {
     loading: "configurable-application--loading",
@@ -100,6 +100,8 @@ class Main extends (Evented) {
             console.error("ApplicationBase is not defined");
             return;
         }
+        // Calcite needed for sign-in dropdown experi
+        window.calcite.init();
         this.importPolyfills();
         this.base = base;
         const { config } = base;
@@ -111,7 +113,6 @@ class Main extends (Evented) {
         Object.keys(i18n.ui).forEach(node_id => {
             const ui_component = document.getElementById(node_id);
             if (ui_component) {
-                console.log("UI-component",i18n.ui[node_id].innerHTML);
                 if(i18n.ui[node_id].innerHTML){
                     ui_component.innerHTML = i18n.ui[node_id].innerHTML;
                 }
@@ -189,13 +190,10 @@ class Main extends (Evented) {
      * @returns {*}
      */
     initializeUserSignIn(force_sign_in?): any {
-        const info = new OAuthInfo({
-            appId: this.base.config.oauthappid,
-            popup: false
-        });
-        IdentityManager.registerOAuthInfos([info]);
-        const checkSignInStatus = () => {
 
+     IdentityManager.useSignInPage = false;
+
+        const checkSignInStatus = () => {
             return IdentityManager.checkSignInStatus(this.base.portal.url).then(userSignIn);
         };
         IdentityManager.on("credential-create", checkSignInStatus);
@@ -211,8 +209,10 @@ class Main extends (Evented) {
                 document.getElementById("user-firstname-node").innerHTML = this.base.portal.user.fullName.split(" ")[0];
                 document.getElementById("user-fullname-node").innerHTML = this.base.portal.user.fullName;
                 document.getElementById("username-node").innerHTML = this.base.portal.user.username;
-                const thumbnail = document.getElementById("user-thumb-node") as HTMLImageElement;
-                thumbnail.src = this.base.portal.user.thumbnailUrl;
+                if(this.base.portal.user.thumbnailUrl){
+                    const thumbnail = document.getElementById("user-thumb-node") as HTMLImageElement;
+                    thumbnail.src = this.base.portal.user.thumbnailUrl;
+                }
                 domClass.add(signInNode, "hide");
                 domClass.remove(userNode, "hide");
             } else {
@@ -242,12 +242,11 @@ class Main extends (Evented) {
         };
 
         // USER SIGN IN //
-        on(signInNode, "click", userSignIn);
-
+        signInNode.addEventListener("click", userSignIn);
         // SIGN OUT NODE //
         const signOutNode = document.getElementById("sign-out-node");
         if (signOutNode) {
-            on(signOutNode, "click", userSignOut);
+            signOutNode.addEventListener("click", userSignOut);
         }
 
         return force_sign_in ? userSignIn() : checkSignInStatus();
@@ -319,11 +318,13 @@ class Main extends (Evented) {
             console.log("Error", error);
         }
 
+        // Collapse panels on load for small (phone) screen sizes 
+        const collapse = (view.widthBreakpoint === "xsmall") ? true : false;
         // LEFT CONTAINER // 
         const left_container = document.getElementById("item-info-container");
         // PANEL TOGGLE // 
         const panelToggleBtn = domConstruct.create("button", {
-            className: "panel-toggle-left btn btn-transparent icon-ui-left-triangle-arrow icon-ui-flush font-size-1",
+            className: `panel-toggle-left btn btn-transparent icon-ui-flush font-size-1 ${collapse ? "icon-ui-right-triangle-arrow" : "icon-ui-left-triangle-arrow"}`,
             title: i18n.map.left_toggle.title
         }, view.root);
 
@@ -337,11 +338,15 @@ class Main extends (Evented) {
         const up_container = document.getElementById("items-list-panel");
         // PANEL TOGGLE //
         const listToggleBtn = domConstruct.create("button", {
-            className: "panel-toggle-up icon-ui-up-arrow btn btn-transparent icon-ui-flush font-size-1",
+            className: `panel-toggle-up btn btn-transparent icon-ui-flush font-size-1 ${collapse ? "icon-ui-down-arrow" : "icon-ui-up-arrow"}`,
             title: i18n.map.up_toggle.title
         }, view.root);
-
-
+  
+        if(collapse){
+            up_container.classList.add("collapsed");
+            left_container.classList.add("collapsed");
+        }
+  
         listToggleBtn.addEventListener("click", () => {
             domClass.toggle(listToggleBtn, "icon-ui-up-arrow icon-ui-down-arrow");
             // TOGGLE VISIBILITY OF CLOSABLE PANELS //
@@ -392,7 +397,7 @@ class Main extends (Evented) {
                 const basemapGallery = new BasemapGallery({
                     view,
                     source: this.base.portal
-                });
+                }); 
 
                 const basemapGalleryExpand = new Expand({
                     view,
@@ -400,6 +405,7 @@ class Main extends (Evented) {
                     expandTooltip: i18n.map.basemapExpand.tooltip
                 });
                 view.ui.add(basemapGalleryExpand, { position: this.base.config.basemapsPosition, index: 1 });
+
             });
         }
 
@@ -411,7 +417,7 @@ class Main extends (Evented) {
             // MapView //
             const compass = new Compass({ view });
             view.ui.add(compass, { position: "top-left", index: 5 });
-        } else {
+        } else if(view.type === "3d" && this.base.config.spinGlobe) {
             // SceneView //
             this.initializeViewSpinTools(view as SceneView);
         }
@@ -602,7 +608,7 @@ class Main extends (Evented) {
             content: layers_panel,
             mode:"floating",
             iconNumber: 0,
-            // icon class comes from parent iconClass (LayerList)
+            expandIconClass:"esri-icon-layers",
             expandTooltip: i18n.map.layerlist_expand.tooltip
         });
         view.ui.add(layerListExpand, { position: "top-right", index: 1 });
@@ -631,6 +637,7 @@ class Main extends (Evented) {
         const _spin = () => {
             if (spin_direction !== "none") {
                 const camera = view.camera.clone();
+    
                 // WHAT IS THE APPROPRIATE ZOOM LEVEL TO SWITCH BETWEEN LOCAL AND GLOBAL? //
                 if (view.zoom > 9) {
                     // AT A 'LOCAL' SCALE WE CHANGE THE HEADING //
@@ -661,9 +668,9 @@ class Main extends (Evented) {
         };
 
         const viewSpinNode = domConstruct.create("div", { className: "view-spin-node" }, view.root);
-        const spinLeftBtn = domConstruct.create("span", { className: "spin-btn icon-ui-arrow-left-circled icon-ui-flush font-size-2 esri-interactive", title: i18n.spin_tool.spin_left.title }, viewSpinNode);
-        const alwaysUpBtn = domConstruct.create("span", { id: "always-up-btn", className: "spin-btn icon-ui-compass icon-ui-flush font-size--1 esri-interactive", title: i18n.spin_tool.always_up.title }, viewSpinNode);
-        const spinRightBtn = domConstruct.create("span", { className: "spin-btn icon-ui-arrow-right-circled icon-ui-flush font-size-2 esri-interactive", title: i18n.spin_tool.spin_right.title }, viewSpinNode);
+        const spinLeftBtn = domConstruct.create("button", { className: "btn btn-transparent spin-btn icon-ui-arrow-left-circled icon-ui-flush font-size-2 esri-interactive", title: i18n.spin_tool.spin_left.title }, viewSpinNode);
+        const alwaysUpBtn = domConstruct.create("button", { id: "always-up-btn", className: "btn btn-transparent spin-btn icon-ui-compass icon-ui-flush font-size--1 esri-interactive", title: i18n.spin_tool.always_up.title }, viewSpinNode);
+        const spinRightBtn = domConstruct.create("button", { className: "btn btn-transparent spin-btn icon-ui-arrow-right-circled icon-ui-flush font-size-2 esri-interactive", title: i18n.spin_tool.spin_right.title }, viewSpinNode);
 
         // SPIN LEFT //
         spinLeftBtn.addEventListener("click", () => {
@@ -691,9 +698,7 @@ class Main extends (Evented) {
             always_up = alwaysUpBtn.classList.contains("selected");
 
         });
-
     }
-
     /**
      * SYNCHRONIZE VIEWS
      *
@@ -989,9 +994,10 @@ class Main extends (Evented) {
             }, "content-container");
 
             // THUMBNAIL NODE //
-            const item_img = domConstruct.create("img", {
+            domConstruct.create("img", {
                 className: "content-item-img",
-                src: layer_item.thumbnailUrl
+                src: layer_item.thumbnailUrl,
+                alt:layer_item.title
             }, item_node);
 
             // ACTION NODE //
@@ -1083,7 +1089,6 @@ class Main extends (Evented) {
     */
     _addItemToMap(map) {
         return (item) => {
-
             // IS LAYER ALREADY IN THE MAP //
             let item_layer = map.layers.find(layer => {
                 return (layer.portalItem.id === item.id);
@@ -1141,7 +1146,6 @@ class Main extends (Evented) {
      * @returns {*}
      */
     getItemLayer(itemLike) {
-
         // GET FULL ITEM //
         return this._getItem(itemLike).then((item) => {
             // IS ITEM A LAYER //
@@ -1263,7 +1267,6 @@ class Main extends (Evented) {
                 map_viewer_url_parameters += `basemapReferenceUrl=${map_infos.map.basemap.referenceLayers.getItemAt(0).url}&`;
             }
 
-
             // LAYERS //
             const layer_ids = map_infos.map.layers.map(layer => {
                 return layer.portalItem.id;
@@ -1275,13 +1278,8 @@ class Main extends (Evented) {
 
             // OPEN MAP VIEWER //
             window.open(`${map_viewer_url}?${map_viewer_url_parameters}`);
-
-
         });
     }
-
-
-
 }
 
 export = Main;

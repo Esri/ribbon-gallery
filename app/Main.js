@@ -43,7 +43,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", "esri/core/promiseUtils", "esri/core/watchUtils", "esri/core/requireUtils", "esri/portal/Portal", "esri/portal/PortalItem", "esri/layers/Layer", "esri/Map", "esri/views/MapView", "esri/views/SceneView", "esri/widgets/Expand", "esri/widgets/Home", "esri/widgets/Compass", "esri/widgets/Legend", "esri/widgets/LayerList", "esri/identity/IdentityManager", "esri/identity/OAuthInfo", "dojo/dom-class", "dojo/dom-geometry", "dojo/dom-construct", "dojo/touch", "dojo/on", "dojo/_base/lang", "ApplicationBase/support/domHelper"], function (require, exports, i18n, Evented, promiseUtils, watchUtils, requireUtils, Portal, PortalItem, Layer, Map, MapView, SceneView, Expand, Home, Compass, Legend, LayerList, IdentityManager, OAuthInfo, domClass, domGeom, domConstruct, touch, on, lang, domHelper_1) {
+define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", "esri/core/promiseUtils", "esri/core/watchUtils", "esri/core/requireUtils", "esri/portal/Portal", "esri/portal/PortalItem", "esri/layers/Layer", "esri/Map", "esri/views/MapView", "esri/views/SceneView", "esri/widgets/Expand", "esri/widgets/Home", "esri/widgets/Compass", "esri/widgets/Legend", "esri/widgets/LayerList", "esri/identity/IdentityManager", "dojo/dom-class", "dojo/dom-geometry", "dojo/dom-construct", "dojo/touch", "dojo/on", "dojo/_base/lang", "ApplicationBase/support/domHelper"], function (require, exports, i18n, Evented, promiseUtils, watchUtils, requireUtils, Portal, PortalItem, Layer, Map, MapView, SceneView, Expand, Home, Compass, Legend, LayerList, IdentityManager, domClass, domGeom, domConstruct, touch, on, lang, domHelper_1) {
     "use strict";
     var CSS = {
         loading: "configurable-application--loading",
@@ -75,6 +75,8 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                 console.error("ApplicationBase is not defined");
                 return;
             }
+            // Calcite needed for sign-in dropdown experi
+            window.calcite.init();
             this.importPolyfills();
             this.base = base;
             var config = base.config;
@@ -85,7 +87,6 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             Object.keys(i18n.ui).forEach(function (node_id) {
                 var ui_component = document.getElementById(node_id);
                 if (ui_component) {
-                    console.log("UI-component", i18n.ui[node_id].innerHTML);
                     if (i18n.ui[node_id].innerHTML) {
                         ui_component.innerHTML = i18n.ui[node_id].innerHTML;
                     }
@@ -150,11 +151,7 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
          */
         Main.prototype.initializeUserSignIn = function (force_sign_in) {
             var _this = this;
-            var info = new OAuthInfo({
-                appId: this.base.config.oauthappid,
-                popup: false
-            });
-            IdentityManager.registerOAuthInfos([info]);
+            IdentityManager.useSignInPage = false;
             var checkSignInStatus = function () {
                 return IdentityManager.checkSignInStatus(_this.base.portal.url).then(userSignIn);
             };
@@ -169,8 +166,10 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                     document.getElementById("user-firstname-node").innerHTML = _this.base.portal.user.fullName.split(" ")[0];
                     document.getElementById("user-fullname-node").innerHTML = _this.base.portal.user.fullName;
                     document.getElementById("username-node").innerHTML = _this.base.portal.user.username;
-                    var thumbnail = document.getElementById("user-thumb-node");
-                    thumbnail.src = _this.base.portal.user.thumbnailUrl;
+                    if (_this.base.portal.user.thumbnailUrl) {
+                        var thumbnail = document.getElementById("user-thumb-node");
+                        thumbnail.src = _this.base.portal.user.thumbnailUrl;
+                    }
                     domClass.add(signInNode, "hide");
                     domClass.remove(userNode, "hide");
                 }
@@ -197,11 +196,11 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                 }).otherwise(console.warn);
             };
             // USER SIGN IN //
-            on(signInNode, "click", userSignIn);
+            signInNode.addEventListener("click", userSignIn);
             // SIGN OUT NODE //
             var signOutNode = document.getElementById("sign-out-node");
             if (signOutNode) {
-                on(signOutNode, "click", userSignOut);
+                signOutNode.addEventListener("click", userSignOut);
             }
             return force_sign_in ? userSignIn() : checkSignInStatus();
         };
@@ -244,7 +243,7 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
         */
         Main.prototype.createView = function (map, type, container_id) {
             return __awaiter(this, void 0, void 0, function () {
-                var EARTH_RADIUS, view_settings, view, error_1, left_container, panelToggleBtn, up_container, listToggleBtn, updating_node, homeWidget, compass;
+                var EARTH_RADIUS, view_settings, view, error_1, collapse, left_container, panelToggleBtn, up_container, listToggleBtn, updating_node, homeWidget, compass;
                 var _this = this;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
@@ -277,9 +276,10 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                             console.log("Error", error_1);
                             return [3 /*break*/, 4];
                         case 4:
+                            collapse = (view.widthBreakpoint === "xsmall") ? true : false;
                             left_container = document.getElementById("item-info-container");
                             panelToggleBtn = domConstruct.create("button", {
-                                className: "panel-toggle-left btn btn-transparent icon-ui-left-triangle-arrow icon-ui-flush font-size-1",
+                                className: "panel-toggle-left btn btn-transparent icon-ui-flush font-size-1 " + (collapse ? "icon-ui-right-triangle-arrow" : "icon-ui-left-triangle-arrow"),
                                 title: i18n.map.left_toggle.title
                             }, view.root);
                             panelToggleBtn.addEventListener("click", function () {
@@ -290,9 +290,13 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                             });
                             up_container = document.getElementById("items-list-panel");
                             listToggleBtn = domConstruct.create("button", {
-                                className: "panel-toggle-up icon-ui-up-arrow btn btn-transparent icon-ui-flush font-size-1",
+                                className: "panel-toggle-up btn btn-transparent icon-ui-flush font-size-1 " + (collapse ? "icon-ui-down-arrow" : "icon-ui-up-arrow"),
                                 title: i18n.map.up_toggle.title
                             }, view.root);
+                            if (collapse) {
+                                up_container.classList.add("collapsed");
+                                left_container.classList.add("collapsed");
+                            }
                             listToggleBtn.addEventListener("click", function () {
                                 domClass.toggle(listToggleBtn, "icon-ui-up-arrow icon-ui-down-arrow");
                                 // TOGGLE VISIBILITY OF CLOSABLE PANELS //
@@ -354,7 +358,7 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                                 compass = new Compass({ view: view });
                                 view.ui.add(compass, { position: "top-left", index: 5 });
                             }
-                            else {
+                            else if (view.type === "3d" && this.base.config.spinGlobe) {
                                 // SceneView //
                                 this.initializeViewSpinTools(view);
                             }
@@ -528,7 +532,7 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                 content: layers_panel,
                 mode: "floating",
                 iconNumber: 0,
-                // icon class comes from parent iconClass (LayerList)
+                expandIconClass: "esri-icon-layers",
                 expandTooltip: i18n.map.layerlist_expand.tooltip
             });
             view.ui.add(layerListExpand, { position: "top-right", index: 1 });
@@ -584,9 +588,9 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                 }
             };
             var viewSpinNode = domConstruct.create("div", { className: "view-spin-node" }, view.root);
-            var spinLeftBtn = domConstruct.create("span", { className: "spin-btn icon-ui-arrow-left-circled icon-ui-flush font-size-2 esri-interactive", title: i18n.spin_tool.spin_left.title }, viewSpinNode);
-            var alwaysUpBtn = domConstruct.create("span", { id: "always-up-btn", className: "spin-btn icon-ui-compass icon-ui-flush font-size--1 esri-interactive", title: i18n.spin_tool.always_up.title }, viewSpinNode);
-            var spinRightBtn = domConstruct.create("span", { className: "spin-btn icon-ui-arrow-right-circled icon-ui-flush font-size-2 esri-interactive", title: i18n.spin_tool.spin_right.title }, viewSpinNode);
+            var spinLeftBtn = domConstruct.create("button", { className: "btn btn-transparent spin-btn icon-ui-arrow-left-circled icon-ui-flush font-size-2 esri-interactive", title: i18n.spin_tool.spin_left.title }, viewSpinNode);
+            var alwaysUpBtn = domConstruct.create("button", { id: "always-up-btn", className: "btn btn-transparent spin-btn icon-ui-compass icon-ui-flush font-size--1 esri-interactive", title: i18n.spin_tool.always_up.title }, viewSpinNode);
+            var spinRightBtn = domConstruct.create("button", { className: "btn btn-transparent spin-btn icon-ui-arrow-right-circled icon-ui-flush font-size-2 esri-interactive", title: i18n.spin_tool.spin_right.title }, viewSpinNode);
             // SPIN LEFT //
             spinLeftBtn.addEventListener("click", function () {
                 enableSpin("none");
@@ -907,9 +911,10 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                     className: "content-item",
                 }, "content-container");
                 // THUMBNAIL NODE //
-                var item_img = domConstruct.create("img", {
+                domConstruct.create("img", {
                     className: "content-item-img",
-                    src: layer_item.thumbnailUrl
+                    src: layer_item.thumbnailUrl,
+                    alt: layer_item.title
                 }, item_node);
                 // ACTION NODE //
                 var action_node = domConstruct.create("span", {
