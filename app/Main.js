@@ -385,28 +385,29 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             var layers_panel = domConstruct.create("div", { className: "panel panel-no-padding" });
             var action_node = domConstruct.create("div", { className: "panel panel-dark-blue panel-no-padding padding-left-half padding-right-1 font-size-0" }, layers_panel);
             domConstruct.create("span", { innerHTML: i18n.map.layers_panel.innerHTML }, action_node);
+            var actionTools = domConstruct.create("span", { className: "action-node hide" }, action_node);
             // REMOVE ALL LAYERS //
-            var remove_layers_btn = domConstruct.create("span", {
-                className: "icon-ui-close-circled icon-ui-flush esri-interactive right",
+            var remove_layers_btn = domConstruct.create("button", {
+                className: "btn btn-transparent btn-small icon-ui-close-circled icon-ui-flush esri-interactive right",
                 title: i18n.map.remove_layers.title
-            }, action_node);
+            }, actionTools);
             remove_layers_btn.addEventListener("click", function () {
                 view.map.layers.removeAll();
                 _this.displayItemDetails();
             });
             // SET LAYERS VISIBILITY //
-            var show_layers_btn = domConstruct.create("span", {
-                className: "icon-ui-checkbox-checked esri-interactive right",
+            var show_layers_btn = domConstruct.create("button", {
+                className: "btn btn-transparent btn-small icon-ui-checkbox-checked esri-interactive right",
                 title: i18n.map.show_layers.title
-            }, action_node);
+            }, actionTools);
             show_layers_btn.addEventListener("click", function () {
                 _this.setAllLayersVisibility(true);
                 _this.displayItemDetails();
             });
-            var hide_layers_btn = domConstruct.create("span", {
-                className: "icon-ui-checkbox-unchecked esri-interactive right",
+            var hide_layers_btn = domConstruct.create("button", {
+                className: "btn btn-transparent btn-small icon-ui-checkbox-unchecked esri-interactive right",
                 title: i18n.map.hide_layers.title
-            }, action_node);
+            }, actionTools);
             hide_layers_btn.addEventListener("click", function () {
                 _this.setAllLayersVisibility(false);
                 _this.displayItemDetails();
@@ -469,7 +470,7 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                     view.goTo(item.layer.fullExtent);
                 });
                 // LAYER DETAILS //
-                var info_node = domConstruct.create("span", {
+                var info_node = domConstruct.create("button", {
                     className: "btn-link icon-ui-description icon-ui-blue right",
                     title: i18n.map.view_details.title
                 }, tools_node);
@@ -539,6 +540,8 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             // LAYER COUNT //
             view.map.layers.on("change", function () {
                 layerListExpand.iconNumber = view.map.layers.length;
+                //hide show layer (add,remove and clear) icons when layers are visible. 
+                view.map.layers.length > 0 ? domClass.remove(actionTools, "hide") : domClass.add(actionTools, "hide");
             });
             // SYNCHRONIZE LAYERLIST EXPANDS //
             layerListExpand.watch("expanded", function (expanded) {

@@ -476,3 +476,8 @@ mostly noticable on small screen sizes*/
 .auth-label{
   padding:1.6rem 0 calc(1.6rem - 4px)0;
 }
+
+.action-node button,.action-node button:hover{
+  color:#fff;
+  padding: 2px;
+}
