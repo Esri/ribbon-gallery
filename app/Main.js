@@ -152,6 +152,11 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
         Main.prototype.initializeUserSignIn = function (force_sign_in) {
             var _this = this;
             IdentityManager.useSignInPage = false;
+            // Overwrite boilerplate behavior and set oauth popup to false
+            var oAuthInfo = IdentityManager.findOAuthInfo(this.base.portal.url);
+            if (oAuthInfo) {
+                oAuthInfo.popup = false;
+            }
             var checkSignInStatus = function () {
                 return IdentityManager.checkSignInStatus(_this.base.portal.url).then(userSignIn);
             };
@@ -438,20 +443,23 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                 var tools_node = domConstruct.create("div", { className: "esri-widget" }, parent_node, "first");
                 // REORDER //
                 var reorder_node = domConstruct.create("div", { className: "inline-block" }, tools_node);
-                var reorder_up_node = domConstruct.create("button", {
-                    className: "btn-link esri-icon-arrow-up",
-                    title: i18n.map.move_layer_up.title
-                }, reorder_node);
-                var reorder_down_node = domConstruct.create("button", {
-                    className: "btn-link esri-icon-arrow-down",
-                    title: i18n.map.move_layer_down.title
-                }, reorder_node);
-                reorder_up_node.addEventListener("click", function () {
-                    view.map.reorder(item.layer, view.map.layers.indexOf(item.layer) + 1);
-                });
-                reorder_down_node.addEventListener("click", function () {
-                    view.map.reorder(item.layer, view.map.layers.indexOf(item.layer) - 1);
-                });
+                // only display reorder layer buttons when more than one layer is added to layer list 
+                if (layerList.operationalItems.length > 1) {
+                    var reorder_up_node = domConstruct.create("button", {
+                        className: "btn-link esri-icon-arrow-up",
+                        title: i18n.map.move_layer_up.title
+                    }, reorder_node);
+                    var reorder_down_node = domConstruct.create("button", {
+                        className: "btn-link esri-icon-arrow-down",
+                        title: i18n.map.move_layer_down.title
+                    }, reorder_node);
+                    reorder_up_node.addEventListener("click", function () {
+                        view.map.reorder(item.layer, view.map.layers.indexOf(item.layer) + 1);
+                    });
+                    reorder_down_node.addEventListener("click", function () {
+                        view.map.reorder(item.layer, view.map.layers.indexOf(item.layer) - 1);
+                    });
+                }
                 // REMOVE LAYER //
                 var remove_layer_node = domConstruct.create("button", {
                     className: "btn-link icon-ui-close right",
