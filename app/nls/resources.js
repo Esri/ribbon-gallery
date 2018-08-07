@@ -1,12 +1,13 @@
 define({
   root: {
-    ui: {"auto-scroll-right": {
-      title: "Auto scroll right"
-    },"auto-scroll-left": {
-      title: "Auto scroll left"
-    },"auto-scroll-reset": {
-      title: "Auto scroll reset"
-    },
+    ui: {
+      "auto-scroll-right": {
+        title: "Auto scroll right"
+      }, "auto-scroll-left": {
+        title: "Auto scroll left"
+      }, "auto-scroll-reset": {
+        title: "Auto scroll reset"
+      },
       "view-type-label-2D": {
         innerHTML: "2D"
       },

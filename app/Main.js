@@ -23,8 +23,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
         while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
+            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [0, t.value];
             switch (op[0]) {
                 case 0: case 1: t = op; break;
                 case 4: _.label++; return { value: op[1], done: false };
@@ -215,6 +215,7 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
          * @returns {Promise}
          */
         Main.prototype.createMap = function () {
+            // MAP //
             var map = new Map({
                 basemap: this.base.config.usePortalBasemap ? this.base.portal.defaultBasemap : { portalItem: { id: this.base.config.defaultBasemapId } },
                 ground: "world-elevation"
@@ -239,13 +240,13 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             });
         };
         /**
-        * CREATE A MAP OR SCENE VIEW
-        *
-        * @param map
-        * @param type
-        * @param container_id
-        * @returns {*}
-        */
+         * CREATE A MAP OR SCENE VIEW
+         *
+         * @param map
+         * @param type
+         * @param container_id
+         * @returns {*}
+         */
         Main.prototype.createView = function (map, type, container_id) {
             return __awaiter(this, void 0, void 0, function () {
                 var EARTH_RADIUS, view_settings, view, error_1, collapse, left_container, panelToggleBtn, up_container, listToggleBtn, updating_node, homeWidget, compass;
@@ -599,9 +600,19 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                 }
             };
             var viewSpinNode = domConstruct.create("div", { className: "view-spin-node" }, view.root);
-            var spinLeftBtn = domConstruct.create("button", { className: "btn btn-transparent spin-btn icon-ui-arrow-left-circled icon-ui-flush font-size-2 esri-interactive", title: i18n.spin_tool.spin_left.title }, viewSpinNode);
-            var alwaysUpBtn = domConstruct.create("button", { id: "always-up-btn", className: "btn btn-transparent spin-btn icon-ui-compass icon-ui-flush font-size--1 esri-interactive", title: i18n.spin_tool.always_up.title }, viewSpinNode);
-            var spinRightBtn = domConstruct.create("button", { className: "btn btn-transparent spin-btn icon-ui-arrow-right-circled icon-ui-flush font-size-2 esri-interactive", title: i18n.spin_tool.spin_right.title }, viewSpinNode);
+            var spinLeftBtn = domConstruct.create("button", {
+                className: "btn btn-transparent spin-btn icon-ui-arrow-left-circled icon-ui-flush font-size-2 esri-interactive",
+                title: i18n.spin_tool.spin_left.title
+            }, viewSpinNode);
+            var alwaysUpBtn = domConstruct.create("button", {
+                id: "always-up-btn",
+                className: "btn btn-transparent spin-btn icon-ui-compass icon-ui-flush font-size--1 esri-interactive",
+                title: i18n.spin_tool.always_up.title
+            }, viewSpinNode);
+            var spinRightBtn = domConstruct.create("button", {
+                className: "btn btn-transparent spin-btn icon-ui-arrow-right-circled icon-ui-flush font-size-2 esri-interactive",
+                title: i18n.spin_tool.spin_right.title
+            }, viewSpinNode);
             // SPIN LEFT //
             spinLeftBtn.addEventListener("click", function () {
                 enableSpin("none");
@@ -882,13 +893,13 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             });
         };
         /**
-        * QUERY FOR LAYER ITEMS IN THE GROUP
-        *  - ONLY ONE SEARCH SO MAXIMUM 100 ITEMS RETURNED
-        *  - USES GROUP CONFIGURED SORT PARAMETERS
-        *
-        * @param portalGroup
-        * @param start
-        */
+         * QUERY FOR LAYER ITEMS IN THE GROUP
+         *  - ONLY ONE SEARCH SO MAXIMUM 100 ITEMS RETURNED
+         *  - USES GROUP CONFIGURED SORT PARAMETERS
+         *
+         * @param portalGroup
+         * @param start
+         */
         Main.prototype.getGroupItems = function (portalGroup, start) {
             var _this = this;
             // SEARCH QUERY //
@@ -964,11 +975,11 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             });
         };
         /**
-        * SET PANEL CONTENT TO LAYER ITEM OR GROUP
-        *
-        * @param portal_group
-        * @returns {function(*=)}
-        */
+         * SET PANEL CONTENT TO LAYER ITEM OR GROUP
+         *
+         * @param portal_group
+         * @returns {function(*=)}
+         */
         Main.prototype.initializePanelContent = function (portal_group) {
             var _this = this;
             // UPDATE THE PANEL CONTENT WITH INFORMATION ABOUT A LAYER ITEM OR THE CONFIGURED GROUP //
@@ -983,6 +994,8 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                     // DETAILS LINK //
                     var detailsLink = document.getElementById("content-details-link");
                     detailsLink.href = _this.base.portal.url + "/home/" + type + ".html?id=" + item_or_group.id;
+                    // SCROLL DESCRIPTION PANEL TO THE TOP //
+                    document.getElementById("content-description-panel").scrollTop = 0;
                     // DESCRIPTION //
                     document.getElementById("content-description").innerHTML = item_or_group.description || ((type === "group") ? i18n.panel.missing_description_group : i18n.panel.missing_description_item);
                 }
@@ -1002,11 +1015,11 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             };
         };
         /**
-        * ADD ITEM TO MAP
-        *  - IF THE LAYER IS ALREADY IN THE MAP, JUST MAKE SURE IT'S VISIBLE
-        *
-        * @param map
-        */
+         * ADD ITEM TO MAP
+         *  - IF THE LAYER IS ALREADY IN THE MAP, JUST MAKE SURE IT'S VISIBLE
+         *
+         * @param map
+         */
         Main.prototype._addItemToMap = function (map) {
             var _this = this;
             return function (item) {
@@ -1140,7 +1153,11 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             domConstruct.create("div", { innerHTML: error ? error.message : lang.replace(i18n.notifications.layer_added_template, layer_item) }, alertNode);
             if (error != null) {
                 var itemDetailsPageUrl = this.base.portal.url + "/home/item.html?id=" + layer_item.id;
-                domConstruct.create("a", { innerHTML: i18n.notifications.view_details.innerHTML, target: "_blank", href: itemDetailsPageUrl }, alertNode);
+                domConstruct.create("a", {
+                    innerHTML: i18n.notifications.view_details.innerHTML,
+                    target: "_blank",
+                    href: itemDetailsPageUrl
+                }, alertNode);
             }
             else {
                 setTimeout(function () {

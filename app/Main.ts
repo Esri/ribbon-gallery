@@ -52,7 +52,8 @@ import on = require("dojo/on");
 import lang = require("dojo/_base/lang");
 
 import esri = __esri;
-declare var window:any;
+
+declare var window: any;
 
 const CSS = {
     loading: "configurable-application--loading",
@@ -70,7 +71,6 @@ import {
     setPageDirection,
     setPageTitle
 } from "ApplicationBase/support/domHelper";
-
 
 
 class Main extends (Evented) {
@@ -104,7 +104,7 @@ class Main extends (Evented) {
         window.calcite.init();
         this.importPolyfills();
         this.base = base;
-        const { config } = base;
+        const {config} = base;
         // LOCALE AND DIRECTION //
         setPageLocale(base.locale);
         setPageDirection(base.direction);
@@ -113,10 +113,10 @@ class Main extends (Evented) {
         Object.keys(i18n.ui).forEach(node_id => {
             const ui_component = document.getElementById(node_id);
             if (ui_component) {
-                if(i18n.ui[node_id].innerHTML){
+                if (i18n.ui[node_id].innerHTML) {
                     ui_component.innerHTML = i18n.ui[node_id].innerHTML;
                 }
-                if(i18n.ui[node_id].title ){
+                if (i18n.ui[node_id].title) {
                     ui_component.title = i18n.ui[node_id].title || "";
                 }
             }
@@ -158,6 +158,7 @@ class Main extends (Evented) {
         }
         return Promise.all(promises);
     }
+
     /**
      * SWITCH VIEW TYPES BETWEEN MAP VIEW AND SCENE VIEW
      *
@@ -177,7 +178,7 @@ class Main extends (Evented) {
                 domClass.toggle(view.container, "visually-hidden", (view.type !== view_type));
             });
 
-            this.emit("view-type-change", { type: view_type });
+            this.emit("view-type-change", {type: view_type});
         });
         // INITIALLY HIDE THE 3D VIEW //
         domClass.add(views.get("3d").container, "visually-hidden");
@@ -191,10 +192,10 @@ class Main extends (Evented) {
      */
     initializeUserSignIn(force_sign_in?): any {
 
-     IdentityManager.useSignInPage = false;
+        IdentityManager.useSignInPage = false;
         // Overwrite boilerplate behavior and set oauth popup to false
         const oAuthInfo = IdentityManager.findOAuthInfo(this.base.portal.url);
-        if(oAuthInfo){
+        if (oAuthInfo) {
             oAuthInfo.popup = false;
         }
         const checkSignInStatus = () => {
@@ -213,7 +214,7 @@ class Main extends (Evented) {
                 document.getElementById("user-firstname-node").innerHTML = this.base.portal.user.fullName.split(" ")[0];
                 document.getElementById("user-fullname-node").innerHTML = this.base.portal.user.fullName;
                 document.getElementById("username-node").innerHTML = this.base.portal.user.username;
-                if(this.base.portal.user.thumbnailUrl){
+                if (this.base.portal.user.thumbnailUrl) {
                     const thumbnail = document.getElementById("user-thumb-node") as HTMLImageElement;
                     thumbnail.src = this.base.portal.user.thumbnailUrl;
                 }
@@ -228,7 +229,7 @@ class Main extends (Evented) {
 
         // SIGN IN //
         const userSignIn = () => {
-            this.base.portal = new Portal({ url: this.base.config.portalUrl, authMode: "immediate" });
+            this.base.portal = new Portal({url: this.base.config.portalUrl, authMode: "immediate"});
             return this.base.portal.load().then(() => {
                 return updateSignInUI();
             }).otherwise(console.warn);
@@ -237,12 +238,11 @@ class Main extends (Evented) {
         // SIGN OUT //
         const userSignOut = () => {
             IdentityManager.destroyCredentials();
-            this.base.portal = new Portal({ url: this.base.config.portalUrl });
+            this.base.portal = new Portal({url: this.base.config.portalUrl});
             this.base.portal.load().then(() => {
                 this.base.portal.user = null;
                 return updateSignInUI();
             }).otherwise(console.warn);
-
         };
 
         // USER SIGN IN //
@@ -255,26 +255,29 @@ class Main extends (Evented) {
 
         return force_sign_in ? userSignIn() : checkSignInStatus();
     }
+
     /**
      * CREATE A MAP, MAP VIEW, AND SCENE VIEW
      *
      * @returns {Promise}
      */
     createMap(): any {
+
+        // MAP //
         const map = new Map({
-            basemap: this.base.config.usePortalBasemap ? this.base.portal.defaultBasemap : { portalItem: { id: this.base.config.defaultBasemapId } },
+            basemap: this.base.config.usePortalBasemap ? this.base.portal.defaultBasemap : {portalItem: {id: this.base.config.defaultBasemapId}},
             ground: "world-elevation"
         });
-        // SET VISIBILITY OF ALL MAP LAYERS //
 
+        // SET VISIBILITY OF ALL MAP LAYERS //
         this.setAllLayersVisibility = (visible) => {
             map.layers.forEach(layer => {
                 layer.visible = visible;
             });
         };
+
         // SCENE VIEW //
         const createSceneView = this.createView(map, "3d", "scene-node");
-
         // MAP VIEW //
         const createMapView = this.createView(map, "2d", "map-node");
 
@@ -284,17 +287,18 @@ class Main extends (Evented) {
             return createViewsResults.reduce((map_info, createViewsResult) => {
                 map_info.views.set(createViewsResult.value.type, createViewsResult.value);
                 return map_info;
-            }, { map: map, views: new Map() });
+            }, {map: map, views: new Map()});
         });
     }
+
     /**
-    * CREATE A MAP OR SCENE VIEW
-    *
-    * @param map
-    * @param type
-    * @param container_id
-    * @returns {*}
-    */
+     * CREATE A MAP OR SCENE VIEW
+     *
+     * @param map
+     * @param type
+     * @param container_id
+     * @returns {*}
+     */
     async createView(map: Map, type: string, container_id: string) {
         // EARTH RADIUS //
         const EARTH_RADIUS = 6371000;
@@ -305,13 +309,14 @@ class Main extends (Evented) {
             map: map,
             center: [5.0, 20.0],
             scale: 104255914,
-            constraints: (type === "2d") ? { snapToZoom: false } : { altitude: { max: (EARTH_RADIUS * 6) } },
+            constraints: (type === "2d") ? {snapToZoom: false} : {altitude: {max: (EARTH_RADIUS * 6)}},
             highlightOptions: {
                 color: "#00c0eb",
                 haloOpacity: 0.8,
                 fillOpacity: 0.2
             }
         };
+
         // VIEW //
         const view = (type === "2d") ? new MapView(view_settings) : new SceneView(view_settings);
         try {
@@ -324,43 +329,45 @@ class Main extends (Evented) {
 
         // Collapse panels on load for small (phone) screen sizes 
         const collapse = (view.widthBreakpoint === "xsmall") ? true : false;
-        // LEFT CONTAINER // 
+
+        // LEFT CONTAINER //
         const left_container = document.getElementById("item-info-container");
-        // PANEL TOGGLE // 
+
+        // PANEL TOGGLE //
         const panelToggleBtn = domConstruct.create("button", {
             className: `panel-toggle-left btn btn-transparent icon-ui-flush font-size-1 ${collapse ? "icon-ui-right-triangle-arrow" : "icon-ui-left-triangle-arrow"}`,
             title: i18n.map.left_toggle.title
         }, view.root);
-
         panelToggleBtn.addEventListener("click", () => {
             // TOGGLE PANEL TOGGLE BTNS //
             domClass.toggle(panelToggleBtn, "icon-ui-left-triangle-arrow icon-ui-right-triangle-arrow");
             // TOGGLE VISIBILITY OF CLOSABLE PANELS //
             domClass.toggle(left_container, "collapsed");
         });
+
         // UP CONTAINER //
         const up_container = document.getElementById("items-list-panel");
+
         // PANEL TOGGLE //
         const listToggleBtn = domConstruct.create("button", {
             className: `panel-toggle-up btn btn-transparent icon-ui-flush font-size-1 ${collapse ? "icon-ui-down-arrow" : "icon-ui-up-arrow"}`,
             title: i18n.map.up_toggle.title
         }, view.root);
-  
-        if(collapse){
+        if (collapse) {
             up_container.classList.add("collapsed");
             left_container.classList.add("collapsed");
         }
-  
+
         listToggleBtn.addEventListener("click", () => {
             domClass.toggle(listToggleBtn, "icon-ui-up-arrow icon-ui-down-arrow");
             // TOGGLE VISIBILITY OF CLOSABLE PANELS //
             up_container.classList.toggle("collapsed");
             document.getElementById("auto-scroll-container").classList.toggle("collapsed");
         });
-        // VIEW UPDATING //
-        const updating_node = domConstruct.create("div", { className: "view-loading-node loader text-center padding-leader-0 padding-trailer-0" });
-        updating_node.innerHTML = `<div class="loader-bars"></div><div class="loader-text font-size--3">${i18n.notifications.updating} ...</div>`
 
+        // VIEW UPDATING //
+        const updating_node = domConstruct.create("div", {className: "view-loading-node loader text-center padding-leader-0 padding-trailer-0"});
+        updating_node.innerHTML = `<div class="loader-bars"></div><div class="loader-text font-size--3">${i18n.notifications.updating} ...</div>`
         view.ui.add(updating_node, "bottom-right");
         watchUtils.init(view, "updating", (updating) => {
             domClass.toggle(updating_node, "is-active", updating);
@@ -380,48 +387,48 @@ class Main extends (Evented) {
             requireUtils.when(require, [
                 "esri/widgets/Search"
             ]).then(([
-                Search
-            ]) => {
-                const search = new Search({ view, searchTerm: this.base.config.searchTerm || "" });
+                         Search
+                     ]) => {
+                const search = new Search({view, searchTerm: this.base.config.searchTerm || ""});
                 const searchExpand = new Expand({
                     view,
                     mode: "floating",
                     content: search
                 });
-                view.ui.add(searchExpand, { position: this.base.config.searchPosition, index: 0 });
+                view.ui.add(searchExpand, {position: this.base.config.searchPosition, index: 0});
             });
         }
         if (this.base.config.basemaps) {
             requireUtils.when(require, [
                 "esri/widgets/BasemapGallery"
             ]).then(([
-                BasemapGallery
-            ]) => {
+                         BasemapGallery
+                     ]) => {
 
                 const basemapGallery = new BasemapGallery({
                     view,
                     source: this.base.portal
-                }); 
+                });
 
                 const basemapGalleryExpand = new Expand({
                     view,
                     content: basemapGallery,
                     expandTooltip: i18n.map.basemapExpand.tooltip
                 });
-                view.ui.add(basemapGalleryExpand, { position: this.base.config.basemapsPosition, index: 1 });
+                view.ui.add(basemapGalleryExpand, {position: this.base.config.basemapsPosition, index: 1});
 
             });
         }
 
-        const homeWidget = new Home({ view });
-        view.ui.add(homeWidget, { position: "top-left", index: 2 });
+        const homeWidget = new Home({view});
+        view.ui.add(homeWidget, {position: "top-left", index: 2});
 
         // VIEW TYPE SPECIFIC //
         if (view.type === "2d") {
             // MapView //
-            const compass = new Compass({ view });
-            view.ui.add(compass, { position: "top-left", index: 5 });
-        } else if(view.type === "3d" && this.base.config.spinGlobe) {
+            const compass = new Compass({view});
+            view.ui.add(compass, {position: "top-left", index: 5});
+        } else if (view.type === "3d" && this.base.config.spinGlobe) {
             // SceneView //
             this.initializeViewSpinTools(view as SceneView);
         }
@@ -433,6 +440,7 @@ class Main extends (Evented) {
         // RETURN THE VIEW //
         return view;
     }
+
     /**
      * INITIALIZE LAYER LIST WIDGET
      *  - REORDER, DETAILS, ZOOM TO, REMOVE
@@ -444,10 +452,10 @@ class Main extends (Evented) {
     initializeLayerList(view: any) {
         view = (view && view.type === "2d") ? view as MapView : view as SceneView;
         // LAYERS PANEL //
-        const layers_panel = domConstruct.create("div", { className: "panel panel-no-padding" });
-        const action_node = domConstruct.create("div", { className: "panel panel-dark-blue panel-no-padding padding-left-half padding-right-1 font-size-0" }, layers_panel);
-        domConstruct.create("span", { innerHTML: i18n.map.layers_panel.innerHTML }, action_node);
-        const actionTools =  domConstruct.create("span",{className:"action-node hide"},action_node);
+        const layers_panel = domConstruct.create("div", {className: "panel panel-no-padding"});
+        const action_node = domConstruct.create("div", {className: "panel panel-dark-blue panel-no-padding padding-left-half padding-right-1 font-size-0"}, layers_panel);
+        domConstruct.create("span", {innerHTML: i18n.map.layers_panel.innerHTML}, action_node);
+        const actionTools = domConstruct.create("span", {className: "action-node hide"}, action_node);
         // REMOVE ALL LAYERS //
         const remove_layers_btn = domConstruct.create("button", {
             className: "btn btn-transparent btn-small icon-ui-close-circled icon-ui-flush esri-interactive right",
@@ -500,13 +508,13 @@ class Main extends (Evented) {
         // CREATE TOOLS NODE //
         const createToolsNode = (item, parent_node) => {
             // TOOLS NODE //
-            const tools_node = domConstruct.create("div", { className: "esri-widget" }, parent_node, "first");
-      
+            const tools_node = domConstruct.create("div", {className: "esri-widget"}, parent_node, "first");
+
             // REORDER //
 
-            const reorder_node = domConstruct.create("div", { className: "inline-block" }, tools_node);
+            const reorder_node = domConstruct.create("div", {className: "inline-block"}, tools_node);
             // only display reorder layer buttons when more than one layer is added to layer list 
-            if(layerList.operationalItems.length > 1){
+            if (layerList.operationalItems.length > 1) {
                 const reorder_up_node = domConstruct.create("button", {
                     className: "btn-link esri-icon-arrow-up",
                     title: i18n.map.move_layer_up.title
@@ -521,7 +529,7 @@ class Main extends (Evented) {
                 reorder_down_node.addEventListener("click", () => {
                     view.map.reorder(item.layer, view.map.layers.indexOf(item.layer) - 1);
                 });
-            } 
+            }
 
             // REMOVE LAYER //
             const remove_layer_node = domConstruct.create("button", {
@@ -557,12 +565,12 @@ class Main extends (Evented) {
         // CREATE LEGEND NODE //
         const createLegendNode = (item, parent_node) => {
 
-            const legend_panel = domConstruct.create("div", { className: "legend-panel esri-widget" }, parent_node);
+            const legend_panel = domConstruct.create("div", {className: "legend-panel esri-widget"}, parent_node);
 
             const legend = new Legend({
                 container: domConstruct.create("div", {}, legend_panel),
                 view,
-                layerInfos: [{ layer: item.layer }]
+                layerInfos: [{layer: item.layer}]
             });
 
             const legend_toggle_node = domConstruct.create("button", {
@@ -589,7 +597,7 @@ class Main extends (Evented) {
                 let item = evt.item;
                 if (item.layer && item.layer.portalItem) {
                     // CREATE ITEM PANEL //
-                    const panel_node = domConstruct.create("div", { className: "esri-widget" });
+                    const panel_node = domConstruct.create("div", {className: "esri-widget"});
 
                     // LAYER TOOLS //
                     createToolsNode(item, panel_node);
@@ -615,23 +623,23 @@ class Main extends (Evented) {
         const layerListExpand = new Expand({
             view,
             content: layers_panel,
-            mode:"floating",
+            mode: "floating",
             iconNumber: 0,
-            expandIconClass:"esri-icon-layers",
+            expandIconClass: "esri-icon-layers",
             expandTooltip: i18n.map.layerlist_expand.tooltip
         });
-        view.ui.add(layerListExpand, { position: "top-right", index: 1 });
+        view.ui.add(layerListExpand, {position: "top-right", index: 1});
 
         // LAYER COUNT //
         view.map.layers.on("change", () => {
             layerListExpand.iconNumber = view.map.layers.length;
             //hide show layer (add,remove and clear) icons when layers are visible. 
-            view.map.layers.length > 0 ? domClass.remove(actionTools, "hide") : domClass.add(actionTools, "hide");        
+            view.map.layers.length > 0 ? domClass.remove(actionTools, "hide") : domClass.add(actionTools, "hide");
         });
 
         // SYNCHRONIZE LAYERLIST EXPANDS //
         layerListExpand.watch("expanded", (expanded) => {
-            this.emit("layerlist-expanded", { expanded: expanded, source: layerListExpand });
+            this.emit("layerlist-expanded", {expanded: expanded, source: layerListExpand});
         });
         this.on("layerlist-expanded", evt => {
             if ((evt.source !== layerListExpand) && (evt.expanded !== layerListExpand.expanded)) {
@@ -639,6 +647,7 @@ class Main extends (Evented) {
             }
         });
     }
+
     initializeViewSpinTools(view: SceneView) {
         let spin_direction = "none";
         let spin_handle = null;
@@ -648,7 +657,7 @@ class Main extends (Evented) {
         const _spin = () => {
             if (spin_direction !== "none") {
                 const camera = view.camera.clone();
-    
+
                 // WHAT IS THE APPROPRIATE ZOOM LEVEL TO SWITCH BETWEEN LOCAL AND GLOBAL? //
                 if (view.zoom > 9) {
                     // AT A 'LOCAL' SCALE WE CHANGE THE HEADING //
@@ -659,7 +668,7 @@ class Main extends (Evented) {
                     // MAINTAIN CURRENT HEADING OR FORCE UP //
                     camera.heading = always_up ? 0.0 : camera.heading;
                 }
-                spin_handle = view.goTo(camera, { animate: false }).then(() => {
+                spin_handle = view.goTo(camera, {animate: false}).then(() => {
                     if (spin_direction !== "none") {
                         setTimeout(() => {
                             requestAnimationFrame(_spin);
@@ -678,10 +687,20 @@ class Main extends (Evented) {
             }
         };
 
-        const viewSpinNode = domConstruct.create("div", { className: "view-spin-node" }, view.root);
-        const spinLeftBtn = domConstruct.create("button", { className: "btn btn-transparent spin-btn icon-ui-arrow-left-circled icon-ui-flush font-size-2 esri-interactive", title: i18n.spin_tool.spin_left.title }, viewSpinNode);
-        const alwaysUpBtn = domConstruct.create("button", { id: "always-up-btn", className: "btn btn-transparent spin-btn icon-ui-compass icon-ui-flush font-size--1 esri-interactive", title: i18n.spin_tool.always_up.title }, viewSpinNode);
-        const spinRightBtn = domConstruct.create("button", { className: "btn btn-transparent spin-btn icon-ui-arrow-right-circled icon-ui-flush font-size-2 esri-interactive", title: i18n.spin_tool.spin_right.title }, viewSpinNode);
+        const viewSpinNode = domConstruct.create("div", {className: "view-spin-node"}, view.root);
+        const spinLeftBtn = domConstruct.create("button", {
+            className: "btn btn-transparent spin-btn icon-ui-arrow-left-circled icon-ui-flush font-size-2 esri-interactive",
+            title: i18n.spin_tool.spin_left.title
+        }, viewSpinNode);
+        const alwaysUpBtn = domConstruct.create("button", {
+            id: "always-up-btn",
+            className: "btn btn-transparent spin-btn icon-ui-compass icon-ui-flush font-size--1 esri-interactive",
+            title: i18n.spin_tool.always_up.title
+        }, viewSpinNode);
+        const spinRightBtn = domConstruct.create("button", {
+            className: "btn btn-transparent spin-btn icon-ui-arrow-right-circled icon-ui-flush font-size-2 esri-interactive",
+            title: i18n.spin_tool.spin_right.title
+        }, viewSpinNode);
 
         // SPIN LEFT //
         spinLeftBtn.addEventListener("click", () => {
@@ -710,6 +729,7 @@ class Main extends (Evented) {
 
         });
     }
+
     /**
      * SYNCHRONIZE VIEWS
      *
@@ -737,8 +757,12 @@ class Main extends (Evented) {
             };
 
             const interactWatcher = view.watch('interacting,animation', (newValue) => {
-                if (!newValue) { return; }
-                if (viewpointWatchHandle || scheduleId) { return; }
+                if (!newValue) {
+                    return;
+                }
+                if (viewpointWatchHandle || scheduleId) {
+                    return;
+                }
 
                 if (!view.animation) {
                     others.forEach((otherView) => {
@@ -759,7 +783,9 @@ class Main extends (Evented) {
                 // stop as soon as another view starts interacting, like if the user starts panning
                 otherInteractHandlers = others.map((otherView) => {
                     return watchUtils.watch(otherView, 'interacting,animation', (value) => {
-                        if (value) { clear(); }
+                        if (value) {
+                            clear();
+                        }
                     });
                 });
 
@@ -799,6 +825,7 @@ class Main extends (Evented) {
         // INIT SYNC VIEWS //
         synchronizeViews(Array.from(views_infos));
     }
+
     initializeItemListScroll() {
         // CONTENT CONTAINER //
         const content_container = document.getElementById("content-container-parent");
@@ -936,6 +963,7 @@ class Main extends (Evented) {
             });
         });
     }
+
     /**
      * INITIALIZE GROUP CONTENT
      *
@@ -944,7 +972,7 @@ class Main extends (Evented) {
 
     async initializeGroupContent(group_id) {
         // FIND GROUP //
-        const groupResponse = await this.base.portal.queryGroups({ query: `id:${group_id}` });
+        const groupResponse = await this.base.portal.queryGroups({query: `id:${group_id}`});
         // DID WE FIND THE GROUP
         if (groupResponse.results.length > 0) {
             //CONFIGURED GROUP // 
@@ -965,14 +993,15 @@ class Main extends (Evented) {
             });
         }
     }
+
     /**
-    * QUERY FOR LAYER ITEMS IN THE GROUP
-    *  - ONLY ONE SEARCH SO MAXIMUM 100 ITEMS RETURNED
-    *  - USES GROUP CONFIGURED SORT PARAMETERS
-    *
-    * @param portalGroup
-    * @param start
-    */
+     * QUERY FOR LAYER ITEMS IN THE GROUP
+     *  - ONLY ONE SEARCH SO MAXIMUM 100 ITEMS RETURNED
+     *  - USES GROUP CONFIGURED SORT PARAMETERS
+     *
+     * @param portalGroup
+     * @param start
+     */
     getGroupItems(portalGroup, start) {
         // SEARCH QUERY //
         // TODO: DO WE INCLUDE CURRENT CULTURE IN THE QUERY?
@@ -991,6 +1020,7 @@ class Main extends (Evented) {
             return queryResults;
         });
     }
+
     /**
      * CREATE A SCROLLABLE LIST OF LAYER ITEMS NODES //
      *
@@ -1008,7 +1038,7 @@ class Main extends (Evented) {
             domConstruct.create("img", {
                 className: "content-item-img",
                 src: layer_item.thumbnailUrl,
-                alt:layer_item.title
+                alt: layer_item.title
             }, item_node);
 
             // ACTION NODE //
@@ -1052,12 +1082,13 @@ class Main extends (Evented) {
 
         });
     }
+
     /**
-    * SET PANEL CONTENT TO LAYER ITEM OR GROUP
-    *
-    * @param portal_group
-    * @returns {function(*=)}
-    */
+     * SET PANEL CONTENT TO LAYER ITEM OR GROUP
+     *
+     * @param portal_group
+     * @returns {function(*=)}
+     */
     initializePanelContent(portal_group) {
         // UPDATE THE PANEL CONTENT WITH INFORMATION ABOUT A LAYER ITEM OR THE CONFIGURED GROUP //
         const display_content = (item_or_group) => {
@@ -1071,6 +1102,8 @@ class Main extends (Evented) {
                 // DETAILS LINK //
                 const detailsLink = document.getElementById("content-details-link") as HTMLLinkElement;
                 detailsLink.href = `${this.base.portal.url}/home/${type}.html?id=${item_or_group.id}`;
+                // SCROLL DESCRIPTION PANEL TO THE TOP //
+                document.getElementById("content-description-panel").scrollTop = 0;
                 // DESCRIPTION //
                 document.getElementById("content-description").innerHTML = item_or_group.description || ((type === "group") ? i18n.panel.missing_description_group : i18n.panel.missing_description_item);
             }
@@ -1093,11 +1126,11 @@ class Main extends (Evented) {
     }
 
     /**
-    * ADD ITEM TO MAP
-    *  - IF THE LAYER IS ALREADY IN THE MAP, JUST MAKE SURE IT'S VISIBLE
-    *
-    * @param map
-    */
+     * ADD ITEM TO MAP
+     *  - IF THE LAYER IS ALREADY IN THE MAP, JUST MAKE SURE IT'S VISIBLE
+     *
+     * @param map
+     */
     _addItemToMap(map) {
         return (item) => {
             // IS LAYER ALREADY IN THE MAP //
@@ -1145,10 +1178,11 @@ class Main extends (Evented) {
         if (itemLike.declaredClass === "esri.portal.PortalItem") {
             return itemLike.loaded ? promiseUtils.resolve(itemLike) : itemLike.load();
         } else {
-            const item = new PortalItem({ id: itemLike.id });
+            const item = new PortalItem({id: itemLike.id});
             return item.load();
         }
     }
+
     /**
      * GET THE LAYER FROM THE PortalItem
      *  - APPLY OVERRIDES IF AVAILABLE
@@ -1162,7 +1196,7 @@ class Main extends (Evented) {
             // IS ITEM A LAYER //
             if (item.isLayer) {
                 // CREATE LAYER FROM ITEM //
-                return Layer.fromPortalItem({ portalItem: item }).then((layer) => {
+                return Layer.fromPortalItem({portalItem: item}).then((layer) => {
                     // LOAD LAYER //
                     return layer.load().then(() => {
                         // FETCH ITEM OVERRIDES //
@@ -1219,6 +1253,7 @@ class Main extends (Evented) {
         });
 
     }
+
     /**
      * ADD A LAYER ITEM NOTIFICATION
      *
@@ -1232,15 +1267,19 @@ class Main extends (Evented) {
             className: error ? CSS.NOTIFICATION_TYPE.ERROR : CSS.NOTIFICATION_TYPE.SUCCESS
         }, notificationsNode);
 
-        const alertCloseNode = domConstruct.create("div", { className: "inline-block esri-interactive icon-ui-close margin-left-1 right" }, alertNode);
+        const alertCloseNode = domConstruct.create("div", {className: "inline-block esri-interactive icon-ui-close margin-left-1 right"}, alertNode);
         on.once(alertCloseNode, "click", () => {
             domConstruct.destroy(alertNode);
         });
-        domConstruct.create("div", { innerHTML: error ? error.message : lang.replace(i18n.notifications.layer_added_template, layer_item) }, alertNode);
+        domConstruct.create("div", {innerHTML: error ? error.message : lang.replace(i18n.notifications.layer_added_template, layer_item)}, alertNode);
 
         if (error != null) {
             const itemDetailsPageUrl = `${this.base.portal.url}/home/item.html?id=${layer_item.id}`;
-            domConstruct.create("a", { innerHTML: i18n.notifications.view_details.innerHTML, target: "_blank", href: itemDetailsPageUrl }, alertNode);
+            domConstruct.create("a", {
+                innerHTML: i18n.notifications.view_details.innerHTML,
+                target: "_blank",
+                href: itemDetailsPageUrl
+            }, alertNode);
         } else {
             setTimeout(() => {
                 domClass.toggle(alertNode, "animate-in-up animate-out-up");
