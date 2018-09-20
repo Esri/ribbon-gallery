@@ -1,5 +1,5 @@
 /*
-  Copyright 2017 Esri
+  Copyright 2018 Esri
 
   Licensed under the Apache License, Version 2.0 (the "License");
 
@@ -19,32 +19,52 @@
 
   limitations under the License.​
 */
-var __assign = (this && this.__assign) || Object.assign || function(t) {
+var __assign = (this && this.__assign) || Object.assign || function (t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
+        for (var p in s)
+            if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
     }
     return t;
 };
 define(["require", "exports", "esri/core/requireUtils", "esri/core/promiseUtils", "esri/core/watchUtils", "./urlUtils"], function (require, exports, requireUtils, promiseUtils, watchUtils, urlUtils_1) {
     "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
     //--------------------------------------------------------------------------
     //
     //  Public Methods
     //
     //--------------------------------------------------------------------------
     function getConfigViewProperties(config) {
-        var center = config.center, components = config.components, extent = config.extent, level = config.level, viewpoint = config.viewpoint;
-        var ui = components ? { ui: { components: urlUtils_1.parseViewComponents(components) } } : null;
-        var cameraProps = viewpoint ? { camera: urlUtils_1.parseViewpoint(viewpoint) } : null;
-        var centerProps = center ? { center: urlUtils_1.parseCenter(center) } : null;
-        var zoomProps = level ? { zoom: urlUtils_1.parseLevel(level) } : null;
-        var extentProps = extent ? { extent: urlUtils_1.parseExtent(extent) } : null;
+        var center = config.center,
+            components = config.components,
+            extent = config.extent,
+            level = config.level,
+            viewpoint = config.viewpoint;
+        var ui = components ? {
+            ui: {
+                components: urlUtils_1.parseViewComponents(components)
+            }
+        } : null;
+        var cameraProps = viewpoint ? {
+            camera: urlUtils_1.parseViewpoint(viewpoint)
+        } : null;
+        var centerProps = center ? {
+            center: urlUtils_1.parseCenter(center)
+        } : null;
+        var zoomProps = level ? {
+            zoom: urlUtils_1.parseLevel(level)
+        } : null;
+        var extentProps = extent ? {
+            extent: urlUtils_1.parseExtent(extent)
+        } : null;
         return __assign({}, ui, cameraProps, centerProps, zoomProps, extentProps);
     }
     exports.getConfigViewProperties = getConfigViewProperties;
+
     function createView(properties) {
         var map = properties.map;
         if (!map) {
@@ -61,8 +81,10 @@ define(["require", "exports", "esri/core/requireUtils", "esri/core/promiseUtils"
         });
     }
     exports.createView = createView;
+
     function createMapFromItem(options) {
-        var item = options.item, appProxies = options.appProxies;
+        var item = options.item,
+            appProxies = options.appProxies;
         var isWebMap = item.type === "Web Map";
         var isWebScene = item.type === "Web Scene";
         if (!isWebMap && !isWebScene) {
@@ -71,8 +93,10 @@ define(["require", "exports", "esri/core/requireUtils", "esri/core/promiseUtils"
         return isWebMap ? createWebMapFromItem(options) : createWebSceneFromItem(options);
     }
     exports.createMapFromItem = createMapFromItem;
+
     function createWebMapFromItem(options) {
-        var item = options.item, appProxies = options.appProxies;
+        var item = options.item,
+            appProxies = options.appProxies;
         return requireUtils.when(require, "esri/WebMap").then(function (WebMap) {
             var wm = new WebMap({
                 portalItem: item
@@ -83,8 +107,10 @@ define(["require", "exports", "esri/core/requireUtils", "esri/core/promiseUtils"
         });
     }
     exports.createWebMapFromItem = createWebMapFromItem;
+
     function createWebSceneFromItem(options) {
-        var item = options.item, appProxies = options.appProxies;
+        var item = options.item,
+            appProxies = options.appProxies;
         return requireUtils.when(require, "esri/WebScene").then(function (WebScene) {
             var ws = new WebScene({
                 portalItem: item
@@ -95,12 +121,14 @@ define(["require", "exports", "esri/core/requireUtils", "esri/core/promiseUtils"
         });
     }
     exports.createWebSceneFromItem = createWebSceneFromItem;
+
     function getItemTitle(item) {
         if (item && item.title) {
             return item.title;
         }
     }
     exports.getItemTitle = getItemTitle;
+
     function goToMarker(marker, view) {
         if (!marker || !view) {
             return promiseUtils.resolve();
@@ -112,6 +140,7 @@ define(["require", "exports", "esri/core/requireUtils", "esri/core/promiseUtils"
         });
     }
     exports.goToMarker = goToMarker;
+
     function findQuery(query, view) {
         // ?find=redlands, ca
         if (!query || !view) {
@@ -122,7 +151,9 @@ define(["require", "exports", "esri/core/requireUtils", "esri/core/promiseUtils"
                 view: view
             });
             return searchVM.search(query).then(function (result) {
-                watchUtils.whenFalseOnce(view, "popup.visible", function () { return searchVM.destroy(); });
+                watchUtils.whenFalseOnce(view, "popup.visible", function () {
+                    return searchVM.destroy();
+                });
                 return result;
             });
         });

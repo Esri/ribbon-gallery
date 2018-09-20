@@ -1,7 +1,10 @@
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -23,8 +26,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
         while (_) try {
-            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [0, t.value];
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
                 case 0: case 1: t = op; break;
                 case 4: _.label++; return { value: op[1], done: false };
@@ -43,7 +46,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", "esri/core/promiseUtils", "esri/core/watchUtils", "esri/core/requireUtils", "esri/portal/Portal", "esri/portal/PortalItem", "esri/layers/Layer", "esri/Map", "esri/views/MapView", "esri/views/SceneView", "esri/widgets/Expand", "esri/widgets/Home", "esri/widgets/Compass", "esri/widgets/Legend", "esri/widgets/LayerList", "esri/identity/IdentityManager", "dojo/dom-class", "dojo/dom-geometry", "dojo/dom-construct", "dojo/touch", "dojo/on", "dojo/_base/lang", "ApplicationBase/support/domHelper"], function (require, exports, i18n, Evented, promiseUtils, watchUtils, requireUtils, Portal, PortalItem, Layer, Map, MapView, SceneView, Expand, Home, Compass, Legend, LayerList, IdentityManager, domClass, domGeom, domConstruct, touch, on, lang, domHelper_1) {
+define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", "esri/core/promiseUtils", "esri/core/watchUtils", "esri/core/requireUtils", "esri/portal/Portal", "esri/portal/PortalItem", "esri/layers/Layer", "esri/Map", "esri/views/MapView", "esri/views/SceneView", "esri/widgets/Expand", "esri/widgets/Home", "esri/widgets/Compass", "esri/widgets/Legend", "esri/widgets/LayerList", "esri/identity/IdentityManager", "dojo/dom-class", "dojo/dom-geometry", "dojo/dom-construct", "dojo/touch", "dojo/on", "dojo/_base/lang", "ApplicationBase/support/domHelper", "esri/geometry"], function (require, exports, i18n, Evented, promiseUtils, watchUtils, requireUtils, Portal, PortalItem, Layer, Map, MapView, SceneView, Expand, Home, Compass, Legend, LayerList, IdentityManager, domClass, domGeom, domConstruct, touch, on, lang, domHelper_1, geometry_1) {
     "use strict";
     var CSS = {
         loading: "configurable-application--loading",
@@ -75,11 +78,13 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                 console.error("ApplicationBase is not defined");
                 return;
             }
-            // Calcite needed for sign-in dropdown experi
+            // Calcite needed for sign-in dropdown experience
             window.calcite.init();
             this.importPolyfills();
             this.base = base;
             var config = base.config;
+            // APPLY SHARED THEMING 
+            this.applySharedTheme(base);
             // LOCALE AND DIRECTION //
             domHelper_1.setPageLocale(base.locale);
             domHelper_1.setPageDirection(base.direction);
@@ -97,7 +102,9 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             });
             // APP TITLE // 
             domHelper_1.setPageTitle(config.title);
-            document.getElementById("app-title-node").innerHTML = config.title;
+            var appTitle = document.getElementById("app-title-node");
+            appTitle.innerHTML = config.title;
+            appTitle.title = config.title;
             // USER SIGN IN // 
             return this.initializeUserSignIn().always(function () {
                 // CREATE MAP //
@@ -105,18 +112,33 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                     // ADD ITEM TO MAP //
                     _this.addItemToMap = _this._addItemToMap(map_infos.map);
                     // SYNC VIEWS //
-                    _this.initializeSynchronizedViews(map_infos.views);
-                    // VIEW TYPE SWITCH //
-                    _this.initializeViewTypeSwitch(map_infos.views);
+                    if (_this.base.config.displayMode === "both") {
+                        // SHOW THE VIEW TYPE SWITCH
+                        document.getElementById("display-mode-toggle").classList.remove("visually-hidden");
+                        _this.initializeSynchronizedViews(map_infos.views);
+                        // VIEW TYPE SWITCH//
+                        _this.initializeViewTypeSwitch(map_infos.views);
+                    }
                     // INITIALIZE CONTENT //
                     _this.initializeGroupContent(_this.base.config.group);
                     // INITIALIZE CREATE MAP //
-                    _this.initializeCreateOnlineMap(map_infos);
+                    if (_this.base.config.createMap) {
+                        document.getElementById("create-map-btn").classList.remove("hide");
+                        _this.initializeCreateOnlineMap(map_infos);
+                    }
                     // REMOVE LOADING //
                     document.body.classList.remove(CSS.loading);
                 });
             });
         };
+        // APPLY THEME DEFINED BY THE ORG OR CUSTOMIZED VIA CONFIG
+        Main.prototype.applySharedTheme = function (base) {
+            var styles = "\n        .top-nav{\n            background-color:" + base.config.headerBackground + ";\n            background-image:" + (base.config.headerBackgroundImage ? 'url(./assets/topo3.png)' : 'none') + ";\n        }\n        .text-white, .panel-toggle-up{\n            color: " + base.config.headerColor + ";\n        }\n        .content-item-title{\n            color: " + base.config.linkColor + ";\n        }\n        .toggle-switch-track:after{\n            background-color: " + base.config.switchButtonColor + ";\n        }\n        .esri-icon-light-blue:before, .icon-ui-light-blue:before{\n            color:" + base.config.navButtonColor + ";\n        }\n        .pulse:before{\n            color: " + base.config.navGlobeColor + ";\n        }\n        .nav-btn .svg-icon{\n            fill: " + base.config.navButtonColor + ";\n        }\n        #content_title .text-blue, a{\n            color: " + base.config.panelLink + ";\n        }\n        .panel-white{\n            background-color: " + base.config.panelBackground + ";\n            color: " + base.config.panelColor + ";\n        }       \n        ";
+            var style = document.createElement("style");
+            style.appendChild(document.createTextNode(styles));
+            document.head.appendChild(style);
+        };
+        // ADD SUPPORT FOR ARRAY.FROM TO BROWSERS (IE11)
         Main.prototype.importPolyfills = function () {
             var promises = [];
             if (!Array.from) {
@@ -135,14 +157,19 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             var display_switch = document.getElementById("display-type-input");
             on(display_switch, "change", function () {
                 var view_type = display_switch.checked ? "3d" : "2d";
-                var arrayViews = [views.get("3d"), views.get("2d")];
-                arrayViews.forEach(function (view) {
+                //  const arrayViews: (MapView | SceneView)[] = [views.get("3d"), views.get("2d")];
+                // const arrayViews: (MapView | SceneView)[] = views;
+                views.forEach(function (view) {
                     domClass.toggle(view.container, "visually-hidden", (view.type !== view_type));
                 });
                 _this.emit("view-type-change", { type: view_type });
             });
             // INITIALLY HIDE THE 3D VIEW //
-            domClass.add(views.get("3d").container, "visually-hidden");
+            views.forEach(function (view) {
+                if (view.type === "3d") {
+                    domClass.add(view.container, "visually-hidden");
+                }
+            });
         };
         /**
          * INITIALIZE USER SIGN IN
@@ -153,10 +180,10 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             var _this = this;
             IdentityManager.useSignInPage = false;
             // Overwrite boilerplate behavior and set oauth popup to false
-            var oAuthInfo = IdentityManager.findOAuthInfo(this.base.portal.url);
-            if (oAuthInfo) {
-                oAuthInfo.popup = false;
-            }
+            // const oAuthInfo = IdentityManager.findOAuthInfo(this.base.portal.url);
+            //if(oAuthInfo){
+            //   oAuthInfo.popup = false;
+            //}
             var checkSignInStatus = function () {
                 return IdentityManager.checkSignInStatus(_this.base.portal.url).then(userSignIn);
             };
@@ -215,9 +242,17 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
          * @returns {Promise}
          */
         Main.prototype.createMap = function () {
-            // MAP //
+            var basemap = this.base.config.defaultBasemap;
+            if (this.base.config.usePortalBasemap) {
+                basemap = this.base.portal.defaultBasemap;
+            }
+            else if (this.base.config.webmap) {
+                basemap = {
+                    portalItem: { id: this.base.config.webmap }
+                };
+            }
             var map = new Map({
-                basemap: this.base.config.usePortalBasemap ? this.base.portal.defaultBasemap : { portalItem: { id: this.base.config.defaultBasemapId } },
+                basemap: basemap,
                 ground: "world-elevation"
             });
             // SET VISIBILITY OF ALL MAP LAYERS //
@@ -226,27 +261,38 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                     layer.visible = visible;
                 });
             };
-            // SCENE VIEW //
-            var createSceneView = this.createView(map, "3d", "scene-node");
-            // MAP VIEW //
-            var createMapView = this.createView(map, "2d", "map-node");
+            var views = [];
+            if (this.base.config.displayMode === "both" || this.base.config.displayMode === "3d") {
+                // SCENE VIEW //
+                domClass.remove("scene-node", "visually-hidden");
+                views.push(this.createView(map, "3d", "scene-node"));
+            }
+            if (this.base.config.displayMode === "both" || this.base.config.displayMode === "2d") {
+                // MAP VIEW //
+                domClass.remove("map-node", "visually-hidden");
+                views.push(this.createView(map, "2d", "map-node"));
+            }
             // RETURN VIEWS WHEN CREATED //
-            return promiseUtils.eachAlways([createMapView, createSceneView]).then(function (createViewsResults) {
+            return promiseUtils.eachAlways(views).then(function (createViewsResults) {
                 // RETURN THE MAP AND VIEWS //
-                return createViewsResults.reduce(function (map_info, createViewsResult) {
-                    map_info.views.set(createViewsResult.value.type, createViewsResult.value);
-                    return map_info;
-                }, { map: map, views: new Map() });
+                var map_info = {
+                    map: map,
+                    views: []
+                };
+                createViewsResults.forEach(function (createViewsResult) {
+                    map_info.views.push(createViewsResult.value);
+                });
+                return map_info;
             });
         };
         /**
-         * CREATE A MAP OR SCENE VIEW
-         *
-         * @param map
-         * @param type
-         * @param container_id
-         * @returns {*}
-         */
+        * CREATE A MAP OR SCENE VIEW
+        *
+        * @param map
+        * @param type
+        * @param container_id
+        * @returns {*}
+        */
         Main.prototype.createView = function (map, type, container_id) {
             return __awaiter(this, void 0, void 0, function () {
                 var EARTH_RADIUS, view_settings, view, error_1, collapse, left_container, panelToggleBtn, up_container, listToggleBtn, updating_node, homeWidget, compass;
@@ -307,7 +353,10 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                                 domClass.toggle(listToggleBtn, "icon-ui-up-arrow icon-ui-down-arrow");
                                 // TOGGLE VISIBILITY OF CLOSABLE PANELS //
                                 up_container.classList.toggle("collapsed");
-                                document.getElementById("auto-scroll-container").classList.toggle("collapsed");
+                                var scroll_container = document.getElementById("auto-scroll-container");
+                                if (scroll_container) {
+                                    scroll_container.classList.toggle("collapsed");
+                                }
                             });
                             updating_node = domConstruct.create("div", { className: "view-loading-node loader text-center padding-leader-0 padding-trailer-0" });
                             updating_node.innerHTML = "<div class=\"loader-bars\"></div><div class=\"loader-text font-size--3\">" + i18n.notifications.updating + " ...</div>";
@@ -316,16 +365,12 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                                 domClass.toggle(updating_node, "is-active", updating);
                             });
                             // POPUP DOCKING OPTIONS //
-                            // TODO: FIGURE OUT HOW TO SYNC POPUP WINDOWS...
                             view.popup.dockEnabled = true;
                             view.popup.dockOptions = {
                                 buttonEnabled: false,
                                 breakpoint: false,
                                 position: "bottom-left"
                             };
-                            // Do we want any of these to be options? If so we 
-                            // can conditionally load. If not just switch out to 
-                            // import 
                             if (this.base.config.search) {
                                 requireUtils.when(require, [
                                     "esri/widgets/Search"
@@ -342,15 +387,41 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                             }
                             if (this.base.config.basemaps) {
                                 requireUtils.when(require, [
-                                    "esri/widgets/BasemapGallery"
+                                    "esri/widgets/BasemapGallery",
+                                    "esri/widgets/BasemapGallery/support/PortalBasemapsSource"
                                 ]).then(function (_a) {
-                                    var BasemapGallery = _a[0];
+                                    var BasemapGallery = _a[0], PortalBasemapsSource = _a[1];
+                                    // add the current basemap to the gallery if its not already there
+                                    var source = new PortalBasemapsSource({
+                                        updateBasemapsCallback: function (portalBasemaps) {
+                                            var found = false;
+                                            if (view.map && view.map.basemap && view.map.basemap.thumbnailUrl && view.map.basemap.thumbnailUrl.indexOf("js.arcgis.com") !== -1) {
+                                                // if it's an esri basemap don't add
+                                                found = true;
+                                            }
+                                            else {
+                                                portalBasemaps.forEach(function (basemap) {
+                                                    if (basemap && basemap.portalItem && basemap.portalItem.title === view.map.basemap.title) {
+                                                        found = true;
+                                                    }
+                                                });
+                                            }
+                                            if (!found) {
+                                                return [view.map.basemap].concat(portalBasemaps);
+                                            }
+                                            else {
+                                                return portalBasemaps;
+                                            }
+                                            // return [view.map.basemap, ...portalBasemaps]
+                                        }
+                                    });
                                     var basemapGallery = new BasemapGallery({
                                         view: view,
-                                        source: _this.base.portal
+                                        source: source //this.base.portal
                                     });
                                     var basemapGalleryExpand = new Expand({
                                         view: view,
+                                        mode: "floating",
                                         content: basemapGallery,
                                         expandTooltip: i18n.map.basemapExpand.tooltip
                                     });
@@ -388,36 +459,39 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             var _this = this;
             view = (view && view.type === "2d") ? view : view;
             // LAYERS PANEL //
-            var layers_panel = domConstruct.create("div", { className: "panel panel-no-padding" });
-            var action_node = domConstruct.create("div", { className: "panel panel-dark-blue panel-no-padding padding-left-half padding-right-1 font-size-0" }, layers_panel);
+            var layers_panel = domConstruct.create("div", { className: "panel panel-no-border panel-no-padding layer-panel" });
+            var action_node = domConstruct.create("div", { className: "panel panel-no-border text-black padding-left-half padding-right-1 font-size-0" }, layers_panel);
             domConstruct.create("span", { innerHTML: i18n.map.layers_panel.innerHTML }, action_node);
-            var actionTools = domConstruct.create("span", { className: "action-node hide" }, action_node);
+            // Hiding remove all layers, hide all layers and show all layers based on holistic testing feedback
+            // We'll review the UX for this and add this capability back at the next release. 
+            //const actionTools = domConstruct.create("span", { className: "action-node hide" }, action_node);
             // REMOVE ALL LAYERS //
-            var remove_layers_btn = domConstruct.create("button", {
+            /*const remove_layers_btn = domConstruct.create("button", {
                 className: "btn btn-transparent btn-small icon-ui-close-circled icon-ui-flush esri-interactive right",
                 title: i18n.map.remove_layers.title
             }, actionTools);
-            remove_layers_btn.addEventListener("click", function () {
+     
+            remove_layers_btn.addEventListener("click", () => {
                 view.map.layers.removeAll();
-                _this.displayItemDetails();
-            });
+                this.displayItemDetails();
+            });*/
             // SET LAYERS VISIBILITY //
-            var show_layers_btn = domConstruct.create("button", {
-                className: "btn btn-transparent btn-small icon-ui-checkbox-checked esri-interactive right",
-                title: i18n.map.show_layers.title
-            }, actionTools);
-            show_layers_btn.addEventListener("click", function () {
-                _this.setAllLayersVisibility(true);
-                _this.displayItemDetails();
-            });
-            var hide_layers_btn = domConstruct.create("button", {
-                className: "btn btn-transparent btn-small icon-ui-checkbox-unchecked esri-interactive right",
-                title: i18n.map.hide_layers.title
-            }, actionTools);
-            hide_layers_btn.addEventListener("click", function () {
-                _this.setAllLayersVisibility(false);
-                _this.displayItemDetails();
-            });
+            /* const show_layers_btn = domConstruct.create("button", {
+                 className: "btn btn-transparent btn-small icon-ui-checkbox-checked esri-interactive right",
+                 title: i18n.map.show_layers.title
+             }, actionTools);
+             show_layers_btn.addEventListener("click", () => {
+                 this.setAllLayersVisibility(true);
+                 this.displayItemDetails();
+             });*/
+            /* const hide_layers_btn = domConstruct.create("button", {
+                 className: "btn btn-transparent btn-small icon-ui-checkbox-unchecked esri-interactive right",
+                 title: i18n.map.hide_layers.title
+             }, actionTools);
+             hide_layers_btn.addEventListener("click", () => {
+                 this.setAllLayersVisibility(false);
+                 this.displayItemDetails();
+             });*/
             // CREATE OPACITY NODE //
             var createOpacityNode = function (item, parent_node) {
                 var opacity_node = domConstruct.create("div", {
@@ -473,7 +547,8 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                 // ZOOM TO //
                 var zoom_to_node = domConstruct.create("button", {
                     className: "btn-link icon-ui-zoom-in-magnifying-glass right",
-                    title: i18n.map.zoom_to_layer.title
+                    title: i18n.map.zoom_to_layer.title,
+                    disabled: item.layer.type === "group" ? true : false // disable zoom for group layers
                 }, tools_node);
                 zoom_to_node.addEventListener("click", function () {
                     view.goTo(item.layer.fullExtent);
@@ -485,6 +560,10 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                 }, tools_node);
                 on(info_node, "click", function () {
                     _this.displayItemDetails(item.layer.portalItem);
+                    // open the panel if closed
+                    if (domClass.contains("item-info-container", "collapsed")) {
+                        domClass.remove("item-info-container", "collapsed");
+                    }
                 });
                 return tools_node;
             };
@@ -539,8 +618,8 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             // LAYER LIST EXPAND //
             var layerListExpand = new Expand({
                 view: view,
-                content: layers_panel,
                 mode: "floating",
+                content: layers_panel,
                 iconNumber: 0,
                 expandIconClass: "esri-icon-layers",
                 expandTooltip: i18n.map.layerlist_expand.tooltip
@@ -550,7 +629,7 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             view.map.layers.on("change", function () {
                 layerListExpand.iconNumber = view.map.layers.length;
                 //hide show layer (add,remove and clear) icons when layers are visible. 
-                view.map.layers.length > 0 ? domClass.remove(actionTools, "hide") : domClass.add(actionTools, "hide");
+                // view.map.layers.length > 0 ? domClass.remove(actionTools, "hide") : domClass.add(actionTools, "hide");
             });
             // SYNCHRONIZE LAYERLIST EXPANDS //
             layerListExpand.watch("expanded", function (expanded) {
@@ -600,19 +679,9 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                 }
             };
             var viewSpinNode = domConstruct.create("div", { className: "view-spin-node" }, view.root);
-            var spinLeftBtn = domConstruct.create("button", {
-                className: "btn btn-transparent spin-btn icon-ui-arrow-left-circled icon-ui-flush font-size-2 esri-interactive",
-                title: i18n.spin_tool.spin_left.title
-            }, viewSpinNode);
-            var alwaysUpBtn = domConstruct.create("button", {
-                id: "always-up-btn",
-                className: "btn btn-transparent spin-btn icon-ui-compass icon-ui-flush font-size--1 esri-interactive",
-                title: i18n.spin_tool.always_up.title
-            }, viewSpinNode);
-            var spinRightBtn = domConstruct.create("button", {
-                className: "btn btn-transparent spin-btn icon-ui-arrow-right-circled icon-ui-flush font-size-2 esri-interactive",
-                title: i18n.spin_tool.spin_right.title
-            }, viewSpinNode);
+            var spinLeftBtn = domConstruct.create("button", { className: "btn btn-transparent spin-btn icon-ui-arrow-left-circled icon-ui-flush font-size-2 esri-interactive", title: i18n.spin_tool.spin_left.title }, viewSpinNode);
+            var alwaysUpBtn = domConstruct.create("button", { id: "always-up-btn", className: "btn btn-transparent spin-btn icon-ui-compass icon-ui-flush font-size--1 esri-interactive", title: i18n.spin_tool.always_up.title }, viewSpinNode);
+            var spinRightBtn = domConstruct.create("button", { className: "btn btn-transparent spin-btn icon-ui-arrow-right-circled icon-ui-flush font-size-2 esri-interactive", title: i18n.spin_tool.spin_right.title }, viewSpinNode);
             // SPIN LEFT //
             spinLeftBtn.addEventListener("click", function () {
                 enableSpin("none");
@@ -725,11 +794,32 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             // INIT SYNC VIEWS //
             synchronizeViews(Array.from(views_infos));
         };
+        Main.prototype.disableGalleryNavigation = function (overflow, navElements) {
+            for (var i = 0; i < navElements.length; i++) {
+                var elem = navElements[i];
+                !overflow ? elem.classList.add("nav-hide") : elem.classList.remove("nav-hide");
+            }
+        };
         Main.prototype.initializeItemListScroll = function () {
+            var _this = this;
             // CONTENT CONTAINER //
             var content_container = document.getElementById("content-container-parent");
             var content_box = domGeom.getContentBox(content_container);
             var scrollLeftMax = (content_container.scrollWidth - content_box.w);
+            // Check to see if we should show nav buttons or not 
+            var navElements = document.getElementsByClassName("gallery-nav");
+            this.disableGalleryNavigation(content_container.scrollWidth > content_container.offsetWidth, navElements);
+            var resizeTimeout;
+            window.addEventListener("resize", function () {
+                // ignore resize events as long as an actualResizeHandler execution is in the queue
+                if (!resizeTimeout) {
+                    resizeTimeout = setTimeout(function () {
+                        resizeTimeout = null;
+                        _this.disableGalleryNavigation(content_container.scrollWidth > content_container.offsetWidth, navElements);
+                        // The actualResizeHandler will execute at a rate of 15fps
+                    }, 66);
+                }
+            }, false);
             // SCROLL OPTIONS //
             var scroll_options = {
                 auto: false,
@@ -808,34 +898,37 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                 scroll_options.distance = scroll_options.manual_distance;
                 scroll_options.auto = false;
             });
-            // INITIATE AUTO SCROLL //
-            document.getElementById("auto-scroll-left").addEventListener("click", function () {
-                if (scroll_options.direction === "LEFT") {
+            if (this.base.config.autoNavScroll) {
+                document.getElementById("auto-scroll-container").classList.remove("hide");
+                // INITIATE AUTO SCROLL //
+                document.getElementById("auto-scroll-left").addEventListener("click", function () {
+                    if (scroll_options.direction === "LEFT") {
+                        auto_scroll();
+                    }
+                    else {
+                        auto_scroll("LEFT");
+                    }
+                });
+                document.getElementById("auto-scroll-right").addEventListener("click", function () {
+                    if (scroll_options.direction === "RIGHT") {
+                        auto_scroll();
+                    }
+                    else {
+                        auto_scroll("RIGHT");
+                    }
+                });
+                // AUTO SCROLL ON STARTUP //
+                if (this.base.config.autoScroll) {
+                    setTimeout(function () {
+                        auto_scroll("RIGHT");
+                    }, 1500);
+                }
+                // RESET //
+                document.getElementById("auto-scroll-reset").addEventListener("click", function () {
                     auto_scroll();
-                }
-                else {
-                    auto_scroll("LEFT");
-                }
-            });
-            document.getElementById("auto-scroll-right").addEventListener("click", function () {
-                if (scroll_options.direction === "RIGHT") {
-                    auto_scroll();
-                }
-                else {
-                    auto_scroll("RIGHT");
-                }
-            });
-            // AUTO SCROLL ON STARTUP //
-            if (this.base.config.autoScroll) {
-                setTimeout(function () {
-                    auto_scroll("RIGHT");
-                }, 1500);
+                    content_container.scrollLeft = 0;
+                });
             }
-            // RESET //
-            document.getElementById("auto-scroll-reset").addEventListener("click", function () {
-                auto_scroll();
-                content_container.scrollLeft = 0;
-            });
             // MANUALLY SCROLL LIST //
             var content_list = document.getElementById("content-container");
             on(content_list, touch.press, function (press_evt) {
@@ -873,6 +966,9 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                             if (groupResponse.results.length > 0) {
                                 portal_group = groupResponse.results[0];
                                 // INITIALIZE PANEL CONTENT AND GET FUNCTION TO DISPLAY ITEM DETAILS //
+                                if (!portal_group.description || this.base.config.description) {
+                                    portal_group.description = this.base.config.description;
+                                }
                                 this.displayItemDetails = this.initializePanelContent(portal_group);
                                 // SEARCH FOR GROUP ITEMS //
                                 return [2 /*return*/, this.getGroupItems(portal_group, 1).then(function () {
@@ -883,7 +979,7 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                             else {
                                 // WE DIDN'T FIND THE GROUP, SO LET'S FORCE THE USER TO SIGN IN AND TRY AGAIN //
                                 // TODO: DO WE STILL NEED THIS?
-                                return [2 /*return*/, this.initializeUserSignIn(true).always(function () {
+                                return [2 /*return*/, this.initializeUserSignIn(true).then(function () {
                                         return _this.initializeGroupContent(group_id);
                                     })];
                             }
@@ -893,13 +989,13 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             });
         };
         /**
-         * QUERY FOR LAYER ITEMS IN THE GROUP
-         *  - ONLY ONE SEARCH SO MAXIMUM 100 ITEMS RETURNED
-         *  - USES GROUP CONFIGURED SORT PARAMETERS
-         *
-         * @param portalGroup
-         * @param start
-         */
+        * QUERY FOR LAYER ITEMS IN THE GROUP
+        *  - ONLY ONE SEARCH SO MAXIMUM 100 ITEMS RETURNED
+        *  - USES GROUP CONFIGURED SORT PARAMETERS
+        *
+        * @param portalGroup
+        * @param start
+        */
         Main.prototype.getGroupItems = function (portalGroup, start) {
             var _this = this;
             // SEARCH QUERY //
@@ -930,12 +1026,13 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             layer_items.forEach(function (layer_item) {
                 // LAYER ITEM NODE //
                 var item_node = domConstruct.create("li", {
-                    className: "content-item",
+                    className: "content-item"
                 }, "content-container");
+                var thumbnail = layer_item.thumbnailUrl || "./assets/ago_downloaded.png";
                 // THUMBNAIL NODE //
                 domConstruct.create("img", {
                     className: "content-item-img",
-                    src: layer_item.thumbnailUrl,
+                    src: thumbnail,
                     alt: layer_item.title
                 }, item_node);
                 // ACTION NODE //
@@ -952,14 +1049,24 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                     className: "item-action esri-icon-visible btn btn-small btn-transparent",
                     title: i18n.item.add_to_map_only_visible.title
                 }, action_node);
-                // TITLE NODE //
+                // TITLE NODE - REPLACE UNDERSCORES SO TITLES WRAP //
+                var title = layer_item.title ? layer_item.title.replace(/_/g, " ").trim() : "";
                 var item_title_node = domConstruct.create("button", {
                     className: "content-item-title btn btn-transparent avenir-demi font-size-0 esri-interactive icon-ui-description",
-                    innerHTML: layer_item.title.trim()
+                    innerHTML: title,
+                    title: title
                 }, item_node);
+                // Add ellipsis if title is too long
+                if (title && title.length > 15) {
+                    window.$clamp(item_title_node, { clamp: 2, useNativeClamp: true });
+                }
                 // DISPLAY ITEM DETAILS //
                 item_title_node.addEventListener("click", function () {
                     _this.displayItemDetails(layer_item);
+                    // open the panel if closed
+                    if (domClass.contains("item-info-container", "collapsed")) {
+                        domClass.remove("item-info-container", "collapsed");
+                    }
                 });
                 // ADD LAYER //
                 add_btn.addEventListener("click", function () {
@@ -975,11 +1082,11 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             });
         };
         /**
-         * SET PANEL CONTENT TO LAYER ITEM OR GROUP
-         *
-         * @param portal_group
-         * @returns {function(*=)}
-         */
+        * SET PANEL CONTENT TO LAYER ITEM OR GROUP
+        *
+        * @param portal_group
+        * @returns {function(*=)}
+        */
         Main.prototype.initializePanelContent = function (portal_group) {
             var _this = this;
             // UPDATE THE PANEL CONTENT WITH INFORMATION ABOUT A LAYER ITEM OR THE CONFIGURED GROUP //
@@ -989,8 +1096,9 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                     var type = (item_or_group.declaredClass === "esri.portal.PortalGroup") ? "group" : "item";
                     domClass.toggle("content-reset-node", "hide", (type === "group"));
                     // TITLE //
-                    document.getElementById("content-title-label").innerHTML = item_or_group.title;
-                    document.getElementById("content-title-label").title = item_or_group.snippet || "";
+                    var titleDiv = document.getElementById("content-title-label");
+                    titleDiv.innerHTML = item_or_group.title;
+                    titleDiv.title = item_or_group.snippet || item_or_group.title || "";
                     // DETAILS LINK //
                     var detailsLink = document.getElementById("content-details-link");
                     detailsLink.href = _this.base.portal.url + "/home/" + type + ".html?id=" + item_or_group.id;
@@ -1015,11 +1123,11 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             };
         };
         /**
-         * ADD ITEM TO MAP
-         *  - IF THE LAYER IS ALREADY IN THE MAP, JUST MAKE SURE IT'S VISIBLE
-         *
-         * @param map
-         */
+        * ADD ITEM TO MAP
+        *  - IF THE LAYER IS ALREADY IN THE MAP, JUST MAKE SURE IT'S VISIBLE
+        *
+        * @param map
+        */
         Main.prototype._addItemToMap = function (map) {
             var _this = this;
             return function (item) {
@@ -1153,11 +1261,7 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             domConstruct.create("div", { innerHTML: error ? error.message : lang.replace(i18n.notifications.layer_added_template, layer_item) }, alertNode);
             if (error != null) {
                 var itemDetailsPageUrl = this.base.portal.url + "/home/item.html?id=" + layer_item.id;
-                domConstruct.create("a", {
-                    innerHTML: i18n.notifications.view_details.innerHTML,
-                    target: "_blank",
-                    href: itemDetailsPageUrl
-                }, alertNode);
+                domConstruct.create("a", { innerHTML: i18n.notifications.view_details.innerHTML, target: "_blank", href: itemDetailsPageUrl }, alertNode);
             }
             else {
                 setTimeout(function () {
@@ -1178,31 +1282,92 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             var _this = this;
             document.getElementById("create-map-btn").addEventListener("click", function () {
                 // CURRENT VIEW //
-                var inputElement = document.getElementById("display-type-input");
-                var display_type = inputElement.checked ? "2d" : "3d";
-                var view = map_infos.views.get(display_type);
-                // MAP VIEWER URL //
-                var map_viewer_url_parameters = "center=" + view.center.longitude + "," + view.center.latitude + "&level=" + Math.floor(view.zoom) + "&";
-                // BASEMAP URL //
-                if (map_infos.map.basemap.baseLayers.length > 0) {
-                    // ASSUMES THERE'S ONLY ONE //
-                    map_viewer_url_parameters += "basemapUrl=" + map_infos.map.basemap.baseLayers.getItemAt(0).url + "&";
+                var display_type = _this.base.config.displayMode;
+                if (_this.base.config.displayMode === "both") {
+                    var inputElement = document.getElementById("display-type-input");
+                    display_type = !inputElement.checked ? "2d" : "3d";
                 }
-                // REFERENCE URL //
-                if (map_infos.map.basemap.referenceLayers.length > 0) {
-                    // ASSUMES THERE'S ONLY ONE //
-                    map_viewer_url_parameters += "basemapReferenceUrl=" + map_infos.map.basemap.referenceLayers.getItemAt(0).url + "&";
-                }
-                // LAYERS //
-                var layer_ids = map_infos.map.layers.map(function (layer) {
-                    return layer.portalItem.id;
+                // TODO handle web scene url params and also different projections
+                var view;
+                map_infos.views.forEach(function (info) {
+                    if (info.type === display_type) {
+                        view = info;
+                    }
                 });
-                map_viewer_url_parameters += "layers=" + layer_ids.join(",");
-                // MAP VIEWER URL //
-                var map_viewer_url = _this.base.portal.url + "/home/webmap/viewer.html";
-                // OPEN MAP VIEWER //
-                window.open(map_viewer_url + "?" + map_viewer_url_parameters);
+                if (view) {
+                    var _a = view.center, x = _a.x, y = _a.y;
+                    var spatialReference = view.spatialReference;
+                    var centerPoint = new geometry_1.Point({
+                        x: x,
+                        y: y,
+                        spatialReference: spatialReference
+                    });
+                    _this.processPoint(centerPoint).then(function (point) {
+                        if (point) {
+                            var urlParams = void 0;
+                            if (display_type === "3d") {
+                                var camera = view.camera;
+                                //'viewpoint=cam:posx,posy,posz,wkid;heading,tilt'
+                                urlParams = "viewpoint=cam:" + camera.position.x + "," + camera.position.y + "," + camera.position.z + "," + camera.position.spatialReference.wkid + ";" + camera.heading + "," + camera.tilt;
+                            }
+                            else {
+                                var longitude = point.longitude, latitude = point.latitude;
+                                var zoom = view.zoom;
+                                urlParams = "center=" + longitude + "," + latitude + "&level=" + zoom.toFixed(0);
+                            }
+                            if (map_infos.map.basemap.baseLayers.length > 0) {
+                                // ASSUMES THERE'S ONLY ONE //
+                                urlParams += "&basemapUrl=" + map_infos.map.basemap.baseLayers.getItemAt(0).url;
+                            }
+                            // REFERENCE URL //
+                            if (map_infos.map.basemap.referenceLayers.length > 0) {
+                                // ASSUMES THERE'S ONLY ONE //
+                                urlParams += "&basemapReferenceUrl=" + map_infos.map.basemap.referenceLayers.getItemAt(0).url;
+                            }
+                            // LAYERS //
+                            var layer_ids = map_infos.map.layers.map(function (layer) {
+                                return layer.portalItem.id;
+                            });
+                            if (layer_ids) {
+                                urlParams += "&layers=" + layer_ids.join(",");
+                            }
+                            var viewerUrl = _this.base.portal.url + "/home/" + (display_type === "3d" ? "webscene" : "webmap") + "/viewer.html";
+                            window.open(viewerUrl + "?" + urlParams);
+                        }
+                        else {
+                            // TODO error handling
+                            console.log("Unable to project point");
+                        }
+                    });
+                }
             });
+        };
+        Main.prototype.processPoint = function (point) {
+            var _a = point.spatialReference, isWGS84 = _a.isWGS84, isWebMercator = _a.isWebMercator;
+            // If spatial reference is WGS84 or Web Mercator, use longitude/latitude values to generate the share URL parameters
+            if (!isWGS84 || !isWebMercator) {
+                return promiseUtils.resolve(point);
+            }
+            requireUtils.when(require, [
+                "esri/geometry/projection",
+                "esri/geometry/SpatialReference"
+            ]).then(function (_a) {
+                var projection = _a[0], SpatialReference = _a[1];
+                var outputSpatialReference = new SpatialReference({
+                    wkid: 4326
+                });
+                return projection.load().then(function () {
+                    if (!projection.isSupported) {
+                        // no client side projection
+                        return (promiseUtils.resolve(new geometry_1.Point({
+                            x: null,
+                            y: null
+                        })));
+                    }
+                    return promiseUtils.resolve(projection.project(point, outputSpatialReference));
+                });
+            });
+            return promiseUtils.resolve();
         };
         return Main;
     }((Evented)));

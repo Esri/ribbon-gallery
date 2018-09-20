@@ -12,12 +12,13 @@
   <title></title>
   <link rel=icon href=./assets/favicon.ico sizes="32x32" type="image/vnd.microsoft.icon">
   <link rel="stylesheet" href="https://s3-us-west-1.amazonaws.com/patterns.esri.com/files/calcite-web/1.0.1/css/calcite-web.min.css">
-  <link rel="stylesheet" href="https://jsdev.arcgis.com/4.9/esri/css/main.css">
+  <link rel="stylesheet" href="https://js.arcgis.com/4.9/esri/css/main.css">
   <link rel="stylesheet" href="./styles/main.css">
   <script src="./app/polyfills/es6-promise.auto.min.js"></script>
   <script src="https://s3-us-west-1.amazonaws.com/patterns.esri.com/files/calcite-web/1.0.2/js/calcite-web.min.js"></script>
+  <script src="app/clamp.js"></script>
   <script src="./app/dojo.js"></script>
-  <script src="https://jsdev.arcgis.com/4.9/"></script>
+  <script src="https://js.arcgis.com/4.9/"></script>
   <script>
     require(["Application/init"]);
   </script>
@@ -32,7 +33,7 @@
           <h1 id="app-title-node" class="text-white font-size-4"></h1>
         </div>
         <!-- VIEW DISPLAY TYPE SWITCH -->
-        <span class="top-nav-list leader-half margin-left-2">
+        <span id="display-mode-toggle" class="top-nav-list leader-half margin-left-2  visually-hidden">
           <label class="toggle-switch trailer-0 docs-toggle-spacer">
             <span id="view-type-label-2D" class="toggle-switch-label text-white font-size-0"></span>
             <input id="display-type-input" type="checkbox" class="toggle-switch-input">
@@ -43,7 +44,7 @@
         <!-- RIGHT ALIGNED -->
         <div class="leader-quarter margin-right-2 right">
           <!--AUTO-SCROLL -->
-          <div id="auto-scroll-container" class="top-nav-list leader-0 trailer-0 margin-right-half esri-interactive">
+          <div id="auto-scroll-container" class="hide top-nav-list leader-0 trailer-0 margin-right-half esri-interactive gallery-nav phone-hide">
             <button id="auto-scroll-left" class="ui-btn btn-small btn btn-transparent font-size-2 icon-ui-expand icon-ui-flush icon-ui-light-blue"></button>
             <button id="auto-scroll-reset" class="pulse btn-small btn btn-transparent padding-left-0 padding-right-0 font-size-2 icon-ui-globe icon-ui-flush"></button>
             <button id="auto-scroll-right" class="ui-btn btn-small btn btn-transparent font-size-2 icon-ui-collapse icon-ui-flush icon-ui-light-blue"></button>
@@ -54,10 +55,10 @@
           </nav>
           <!-- USER NODE -->
           <div id="user-node" class="dropdown js-dropdown hide">
-            <button class="auth-label top-nav-link btn btn-link text-white icon-ui-user margin-left-1 esri-interactive js-dropdown-toggle" aria-haspopup="true"
-              aria-expanded="false">
+            <button class="auth-label top-nav-link btn btn-link text-white icon-ui-user margin-left-1 esri-interactive js-dropdown-toggle"
+              aria-haspopup="true" aria-expanded="false">
               <span id="user-firstname-node"></span>
-          </button>
+            </button>
             <nav class="dropdown-menu dropdown-right" role="menu">
               <span class="dropdown-title">
                 <span id="user-fullname-node"></span>
@@ -73,10 +74,12 @@
         </div>
       </div>
       <!-- ITEMS LIST PANEL -->
-      <div id="items-list-panel" class="">
+      <div id="items-list-panel" class="items-list-align">
         <!-- SCROLL LEFT -->
-        <button id="items-list-left" class="ui-btn btn-transparent nav-btn font-size-7 leader-1 esri-interactive">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" class="svg-icon"><path d="M25 28h-5L8 16 20 4h5L13 16l12 12z"/></svg>
+        <button id="items-list-left" class="ui-btn btn-transparent nav-btn font-size-7 leader-1 esri-interactive gallery-nav nav-hide">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" class="svg-icon">
+            <path d="M25 28h-5L8 16 20 4h5L13 16l12 12z" />
+          </svg>
         </button>
         <!-- ITEMS LIST CONTAINER -->
         <div id="content-container-parent" class="trailer-0">
@@ -84,8 +87,10 @@
           <ul id="content-container" class="trailer-0"></ul>
         </div>
         <!-- SCROLL RIGHT -->
-        <button id="items-list-right" class="ui-btn btn-transparent nav-btn font-size-7  leader-1 esri-interactive">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" class="svg-icon"><path d="M7 4h5l12 12-12 12H7l12-12L7 4z"/></svg>
+        <button id="items-list-right" class="ui-btn btn-transparent nav-btn font-size-7 leader-1 esri-interactive gallery-nav nav-hide">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" class="svg-icon">
+            <path d="M7 4h5l12 12-12 12H7l12-12L7 4z" />
+          </svg>
         </button>
       </div>
     </header>
@@ -104,19 +109,19 @@
         </div>
         <!-- CONTENT PANEL -->
         <div id="content-description-panel" class="panel panel-white panel-no-border trailer-half">
-          <div id="content-description"></div>
+          <p id="content-description"></p>
         </div>
         <!-- CREATE MAP -->
         <div id="item-links" class="panel panel-white panel-no-padding panel-no-border text-center font-size--2 trailer-half">
-          <button id="create-map-btn" class="btn btn-small btn-clear btn-fill icon-ui-maps"></button>
+          <button id="create-map-btn" class="btn btn-small btn-clear btn-fill icon-ui-maps hide"></button>
         </div>
       </div>
       <!-- VIEWS CONTAINER -->
       <div id="map-container" class="panel panel-no-border">
         <!-- MAP VIEW -->
-        <div id="map-node" class="view-node"></div>
+        <div id="map-node" class="view-node visually-hidden"></div>
         <!-- SCENE VIEW -->
-        <div id="scene-node" class="view-node"></div>
+        <div id="scene-node" class="view-node visually-hidden"></div>
       </div>
     </div>
   </div>

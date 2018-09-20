@@ -1,0 +1,230 @@
+{
+    "configurationSettings": [{
+        "category": "General",
+        "fields": [{
+            "type": "paragraph",
+            "label": "Select a group of layers to display"
+        }, {
+            "type": "group",
+            "label": "Select a group"
+        }, {
+            "type": "string",
+            "fieldName": "title",
+            "label": "Title",
+            "tooltip": "Defaults to Layer Showcase"
+        }, {
+            "type": "string",
+            "fieldName": "description",
+            "label": "Details",
+            "placeHolder": "Defaults to group description.",
+            "tooltip": "Enter content for the details panel",
+            "stringFieldOption": "richtext"
+        }, {
+            "type": "boolean",
+            "fieldName": "createMap",
+            "label": "Add Create Map button to details"
+        }, {
+            "type": "paragraph",
+            "value": "Switch between 2d and 3d or disable either 2d or 3d display"
+        }, {
+            "type": "options",
+            "fieldName": "displayMode",
+            "label": "Display mode",
+            "tooltip": "2d/3d or both",
+            "options": [{
+                    "label": "Both",
+                    "value": "both"
+                },
+                {
+                    "label": "2D Display",
+                    "value": "2d"
+                },
+                {
+                    "label": "3D Display",
+                    "value": "3d"
+                }
+            ]
+        }, {
+            "type": "conditional",
+            "fieldName": "usePortalBasemap",
+            "label": "Use the default basemap defined in ArcGIS Online/Portal",
+            "condition": true,
+            "items": [{
+                "type": "paragraph",
+                "value": "Select a web map that contains the base map you want to use as the default."
+            }, {
+                "type": "webmap",
+                "label": "Select a base map",
+                "optional": true
+            }]
+        }]
+    }, {
+        "category": "Theme",
+        "fields": [{
+            "type": "subcategory",
+            "label": "Header color theme"
+        }, {
+            "type": "color",
+            "fieldName": "headerBackground",
+            "tooltip": "Header background color",
+            "label": "Header background",
+            "sharedThemeProperty": "header.background"
+        }, {
+            "type": "boolean",
+            "fieldName": "headerBackgroundImage",
+            "tooltip": "When true header background image is displayed",
+            "label": "Header background image"
+        }, {
+            "type": "color",
+            "fieldName": "headerColor",
+            "tooltip": "Header text color",
+            "label": "Header text color",
+            "sharedThemeProperty": "header.text"
+        }, {
+            "type": "color",
+            "fieldName": "linkColor",
+            "tooltip": "Gallery title link color",
+            "label": "Gallery title color",
+            "sharedThemeProperty": "body.link"
+        }, {
+            "type": "color",
+            "fieldName": "navButtonColor",
+            "tooltip": "Navigation arrow color",
+            "label": "Navigation arrows",
+            "sharedThemeProperty": "button.background"
+        }, {
+            "type": "color",
+            "fieldName": "navGlobeColor",
+            "tooltip": "Navigation globe color",
+            "label": "Navigation globe icon color"
+        }, {
+            "type": "color",
+            "fieldName": "switchButtonColor",
+            "label": "2d/3d button color",
+            "tooltip": "2d/3d switch button color"
+        }, {
+            "type": "subcategory",
+            "label": "Panel color theme"
+        }, {
+            "type": "color",
+            "fieldName": "panelBackground",
+            "tooltip": "Panel body background color",
+            "label": "Panel background",
+            "sharedThemeProperty": "body.background"
+        }, {
+            "type": "color",
+            "fieldName": "panelColor",
+            "tooltip": "Panel body text color",
+            "label": "Panel text color",
+            "sharedThemeProperty": "body.text"
+        }, {
+            "type": "color",
+            "fieldName": "panelLink",
+            "tooltip": "Panel link color",
+            "label": "Panel link color",
+            "sharedThemeProperty": "body.link"
+        }]
+    }, {
+        "category": "Options",
+        "fields": [{
+                "type": "conditional",
+                "fieldName": "basemaps",
+                "tooltip": "Add Basemap gallery to app",
+                "label": "Add Basemap Gallery",
+                "condition": false,
+                "items": [{
+                    "type": "options",
+                    "fieldName": "basemapsPosition",
+                    "label": "Basemap Gallery position",
+                    "tooltip": "Select location for basemap gallery",
+                    "options": [{
+                            "label": "Top right",
+                            "value": "top-right"
+                        }, {
+                            "label": "Top left",
+                            "value": "top-left"
+                        },
+                        {
+                            "label": "Bottom right",
+                            "value": "bottom-right"
+                        },
+                        {
+                            "label": "Bottom left",
+                            "value": "bottom-left"
+                        }
+                    ]
+                }]
+            }, {
+                "type": "conditional",
+                "fieldName": "search",
+                "tooltip": "Add Search to app",
+                "label": "Add Search",
+                "condition": false,
+                "items": [{
+                    "type": "options",
+                    "fieldName": "searchPosition",
+                    "label": "Search position",
+                    "tooltip": "Select location for the search tool",
+                    "options": [{
+                            "label": "Top right",
+                            "value": "top-right"
+                        }, {
+                            "label": "Top left",
+                            "value": "top-left"
+                        },
+                        {
+                            "label": "Bottom right",
+                            "value": "bottom-right"
+                        },
+                        {
+                            "label": "Bottom left",
+                            "value": "bottom-left"
+                        }
+                    ]
+                }, {
+                    "type": "string",
+                    "fieldName": "searchTerm",
+                    "label": "Default search term",
+                    "tooltip": "Specify a default search term"
+                }]
+            }, {
+                "type": "boolean",
+                "label": "Add tools to spin globe to 3D map",
+                "fieldName": "spinGlobe"
+            },
+            {
+                "type": "conditional",
+                "fieldName": "autoNavScroll",
+                "label": "Add auto scroll navigtion tools",
+                "condition": true,
+                "items": [{
+                    "type": "boolean",
+                    "fieldName": "autoScroll",
+                    "label": "Auto scroll gallery when app loads"
+                }]
+            }
+        ]
+    }],
+    "values": {
+        "displayMode": "both",
+        "headerColor": "#fff",
+        "createMap": true,
+        "headerBackground": "#005e95",
+        "headerBackgroundImage": true,
+        "switchButtonColor": "#fff",
+        "navButtonColor": "#56a5d8",
+        "linkColor": "#eee",
+        "navGlobeColor": "#fff",
+        "panelColor": "#4c4c4c",
+        "panelLink": "#0079c1",
+        "panelBackground": "#fff",
+        "spinGlobe": true,
+        "autoScroll": false,
+        "autoNavScroll": true,
+        "usePortalBasemap": false,
+        "basemaps": true,
+        "basemapsPosition": "top-left",
+        "search": true,
+        "searchPosition": "top-left"
+    }
+}
