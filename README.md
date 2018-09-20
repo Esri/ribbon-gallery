@@ -28,6 +28,7 @@ The side panel of the Layer Showcase opens with group description, including gra
 1. Fork and then clone the repo. 
 2. Install dependencies with npm install.
 3. Update config/application.json with your preferences
+4. Set the isEsri param in config/applicationBase.json to false.
 
 ## Requirements
 
