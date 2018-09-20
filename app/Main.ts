@@ -52,7 +52,6 @@ import on = require("dojo/on");
 import lang = require("dojo/_base/lang");
 
 import esri = __esri;
-
 declare var window: any;
 
 const CSS = {
@@ -64,13 +63,12 @@ const CSS = {
         ERROR: "alert alert-red animate-in-up is-active inline-block"
     }
 };
-
-
 import {
     setPageLocale,
     setPageDirection,
     setPageTitle
 } from "ApplicationBase/support/domHelper";
+import { Point } from "esri/geometry";
 
 
 class Main extends (Evented) {
@@ -100,11 +98,13 @@ class Main extends (Evented) {
             console.error("ApplicationBase is not defined");
             return;
         }
-        // Calcite needed for sign-in dropdown experi
+        // Calcite needed for sign-in dropdown experience
         window.calcite.init();
         this.importPolyfills();
         this.base = base;
-        const {config} = base;
+        const { config } = base;
+        // APPLY SHARED THEMING 
+        this.applySharedTheme(base);
         // LOCALE AND DIRECTION //
         setPageLocale(base.locale);
         setPageDirection(base.direction);
@@ -124,7 +124,10 @@ class Main extends (Evented) {
 
         // APP TITLE // 
         setPageTitle(config.title);
-        document.getElementById("app-title-node").innerHTML = config.title;
+        const appTitle = document.getElementById("app-title-node");
+        appTitle.innerHTML = config.title;
+        appTitle.title = config.title;
+
         // USER SIGN IN // 
         return this.initializeUserSignIn().always(() => {
             // CREATE MAP //
@@ -134,23 +137,69 @@ class Main extends (Evented) {
                 this.addItemToMap = this._addItemToMap(map_infos.map);
 
                 // SYNC VIEWS //
-                this.initializeSynchronizedViews(map_infos.views);
-
-                // VIEW TYPE SWITCH //
-                this.initializeViewTypeSwitch(map_infos.views);
+                if (this.base.config.displayMode === "both") {
+                    // SHOW THE VIEW TYPE SWITCH
+                    document.getElementById("display-mode-toggle").classList.remove("visually-hidden");
+                    this.initializeSynchronizedViews(map_infos.views);
+                    // VIEW TYPE SWITCH//
+                    this.initializeViewTypeSwitch(map_infos.views);
+                }
 
                 // INITIALIZE CONTENT //
                 this.initializeGroupContent(this.base.config.group);
 
                 // INITIALIZE CREATE MAP //
-                this.initializeCreateOnlineMap(map_infos);
+                if (this.base.config.createMap) {
+                    document.getElementById("create-map-btn").classList.remove("hide");
+                    this.initializeCreateOnlineMap(map_infos);
+                }
 
                 // REMOVE LOADING //
                 document.body.classList.remove(CSS.loading);
             });
         });
     }
+    // APPLY THEME DEFINED BY THE ORG OR CUSTOMIZED VIA CONFIG
+    applySharedTheme(base: ApplicationBase) {
+        let styles = `
+        .top-nav{
+            background-color:${base.config.headerBackground};
+            background-image:${base.config.headerBackgroundImage ? 'url(./assets/topo3.png)' : 'none'};
+        }
+        .text-white, .panel-toggle-up{
+            color: ${base.config.headerColor};
+        }
+        .content-item-title{
+            color: ${base.config.linkColor};
+        }
+        .toggle-switch-track:after{
+            background-color: ${base.config.switchButtonColor};
+        }
+        .esri-icon-light-blue:before, .icon-ui-light-blue:before{
+            color:${base.config.navButtonColor};
+        }
+        .pulse:before{
+            color: ${base.config.navGlobeColor};
+        }
+        .nav-btn .svg-icon{
+            fill: ${base.config.navButtonColor};
+        }
+        #content_title .text-blue, a{
+            color: ${base.config.panelLink};
+        }
+        .panel-white{
+            background-color: ${base.config.panelBackground};
+            color: ${base.config.panelColor};
+        }       
+        `;
 
+        var style = document.createElement("style");
+        style.appendChild(document.createTextNode(styles));
+        document.head.appendChild(style);
+
+
+    }
+    // ADD SUPPORT FOR ARRAY.FROM TO BROWSERS (IE11)
     importPolyfills() {
         let promises = [];
         if (!Array.from) {
@@ -158,31 +207,32 @@ class Main extends (Evented) {
         }
         return Promise.all(promises);
     }
-
     /**
      * SWITCH VIEW TYPES BETWEEN MAP VIEW AND SCENE VIEW
      *
      * @param views
      */
-    initializeViewTypeSwitch(views) {
-
+    initializeViewTypeSwitch(views: (MapView | SceneView)[]) {
         // DISPLAY TYPE SWITCH //
         const display_switch = document.getElementById("display-type-input") as HTMLInputElement;
         on(display_switch, "change", () => {
 
             const view_type = display_switch.checked ? "3d" : "2d";
 
-            const arrayViews: (MapView | SceneView)[] = [views.get("3d"), views.get("2d")];
-
-            arrayViews.forEach((view: MapView | SceneView) => {
+            //  const arrayViews: (MapView | SceneView)[] = [views.get("3d"), views.get("2d")];
+            // const arrayViews: (MapView | SceneView)[] = views;
+            views.forEach((view: MapView | SceneView) => {
                 domClass.toggle(view.container, "visually-hidden", (view.type !== view_type));
             });
 
-            this.emit("view-type-change", {type: view_type});
+            this.emit("view-type-change", { type: view_type });
         });
         // INITIALLY HIDE THE 3D VIEW //
-        domClass.add(views.get("3d").container, "visually-hidden");
-
+        views.forEach((view) => {
+            if (view.type === "3d") {
+                domClass.add(view.container, "visually-hidden");
+            }
+        });
     }
 
     /**
@@ -194,10 +244,10 @@ class Main extends (Evented) {
 
         IdentityManager.useSignInPage = false;
         // Overwrite boilerplate behavior and set oauth popup to false
-        const oAuthInfo = IdentityManager.findOAuthInfo(this.base.portal.url);
-        if (oAuthInfo) {
-            oAuthInfo.popup = false;
-        }
+        // const oAuthInfo = IdentityManager.findOAuthInfo(this.base.portal.url);
+        //if(oAuthInfo){
+        //   oAuthInfo.popup = false;
+        //}
         const checkSignInStatus = () => {
             return IdentityManager.checkSignInStatus(this.base.portal.url).then(userSignIn);
         };
@@ -229,7 +279,7 @@ class Main extends (Evented) {
 
         // SIGN IN //
         const userSignIn = () => {
-            this.base.portal = new Portal({url: this.base.config.portalUrl, authMode: "immediate"});
+            this.base.portal = new Portal({ url: this.base.config.portalUrl, authMode: "immediate" });
             return this.base.portal.load().then(() => {
                 return updateSignInUI();
             }).otherwise(console.warn);
@@ -238,11 +288,12 @@ class Main extends (Evented) {
         // SIGN OUT //
         const userSignOut = () => {
             IdentityManager.destroyCredentials();
-            this.base.portal = new Portal({url: this.base.config.portalUrl});
+            this.base.portal = new Portal({ url: this.base.config.portalUrl });
             this.base.portal.load().then(() => {
                 this.base.portal.user = null;
                 return updateSignInUI();
             }).otherwise(console.warn);
+
         };
 
         // USER SIGN IN //
@@ -255,50 +306,66 @@ class Main extends (Evented) {
 
         return force_sign_in ? userSignIn() : checkSignInStatus();
     }
-
     /**
      * CREATE A MAP, MAP VIEW, AND SCENE VIEW
      *
      * @returns {Promise}
      */
     createMap(): any {
-
-        // MAP //
+        let basemap = this.base.config.defaultBasemap;
+        if (this.base.config.usePortalBasemap) {
+            basemap = this.base.portal.defaultBasemap
+        } else if (this.base.config.webmap) {
+            basemap = {
+                portalItem: { id: this.base.config.webmap as string }
+            }
+        }
         const map = new Map({
-            basemap: this.base.config.usePortalBasemap ? this.base.portal.defaultBasemap : {portalItem: {id: this.base.config.defaultBasemapId}},
+            basemap: basemap,
             ground: "world-elevation"
         });
-
         // SET VISIBILITY OF ALL MAP LAYERS //
+
         this.setAllLayersVisibility = (visible) => {
             map.layers.forEach(layer => {
                 layer.visible = visible;
             });
         };
 
-        // SCENE VIEW //
-        const createSceneView = this.createView(map, "3d", "scene-node");
-        // MAP VIEW //
-        const createMapView = this.createView(map, "2d", "map-node");
+        const views = [];
+        if (this.base.config.displayMode === "both" || this.base.config.displayMode === "3d") {
+            // SCENE VIEW //
+            domClass.remove("scene-node", "visually-hidden");
+            views.push(this.createView(map, "3d", "scene-node"));
+        }
+        if (this.base.config.displayMode === "both" || this.base.config.displayMode === "2d") {
+            // MAP VIEW //
+            domClass.remove("map-node", "visually-hidden");
+            views.push(this.createView(map, "2d", "map-node"));
+        }
 
         // RETURN VIEWS WHEN CREATED //
-        return promiseUtils.eachAlways([createMapView, createSceneView]).then(createViewsResults => {
+        return promiseUtils.eachAlways(views).then(createViewsResults => {
             // RETURN THE MAP AND VIEWS //
-            return createViewsResults.reduce((map_info, createViewsResult) => {
-                map_info.views.set(createViewsResult.value.type, createViewsResult.value);
-                return map_info;
-            }, {map: map, views: new Map()});
+            const map_info = {
+                map: map,
+                views: []
+            };
+            createViewsResults.forEach(createViewsResult => {
+                map_info.views.push(createViewsResult.value);
+            });
+            return map_info;
+
         });
     }
-
     /**
-     * CREATE A MAP OR SCENE VIEW
-     *
-     * @param map
-     * @param type
-     * @param container_id
-     * @returns {*}
-     */
+    * CREATE A MAP OR SCENE VIEW
+    *
+    * @param map
+    * @param type
+    * @param container_id
+    * @returns {*}
+    */
     async createView(map: Map, type: string, container_id: string) {
         // EARTH RADIUS //
         const EARTH_RADIUS = 6371000;
@@ -309,14 +376,13 @@ class Main extends (Evented) {
             map: map,
             center: [5.0, 20.0],
             scale: 104255914,
-            constraints: (type === "2d") ? {snapToZoom: false} : {altitude: {max: (EARTH_RADIUS * 6)}},
+            constraints: (type === "2d") ? { snapToZoom: false } : { altitude: { max: (EARTH_RADIUS * 6) } },
             highlightOptions: {
                 color: "#00c0eb",
                 haloOpacity: 0.8,
                 fillOpacity: 0.2
             }
         };
-
         // VIEW //
         const view = (type === "2d") ? new MapView(view_settings) : new SceneView(view_settings);
         try {
@@ -329,30 +395,28 @@ class Main extends (Evented) {
 
         // Collapse panels on load for small (phone) screen sizes 
         const collapse = (view.widthBreakpoint === "xsmall") ? true : false;
-
-        // LEFT CONTAINER //
+        // LEFT CONTAINER // 
         const left_container = document.getElementById("item-info-container");
-
-        // PANEL TOGGLE //
+        // PANEL TOGGLE // 
         const panelToggleBtn = domConstruct.create("button", {
             className: `panel-toggle-left btn btn-transparent icon-ui-flush font-size-1 ${collapse ? "icon-ui-right-triangle-arrow" : "icon-ui-left-triangle-arrow"}`,
             title: i18n.map.left_toggle.title
         }, view.root);
+
         panelToggleBtn.addEventListener("click", () => {
             // TOGGLE PANEL TOGGLE BTNS //
             domClass.toggle(panelToggleBtn, "icon-ui-left-triangle-arrow icon-ui-right-triangle-arrow");
             // TOGGLE VISIBILITY OF CLOSABLE PANELS //
             domClass.toggle(left_container, "collapsed");
         });
-
         // UP CONTAINER //
         const up_container = document.getElementById("items-list-panel");
-
         // PANEL TOGGLE //
         const listToggleBtn = domConstruct.create("button", {
             className: `panel-toggle-up btn btn-transparent icon-ui-flush font-size-1 ${collapse ? "icon-ui-down-arrow" : "icon-ui-up-arrow"}`,
             title: i18n.map.up_toggle.title
         }, view.root);
+
         if (collapse) {
             up_container.classList.add("collapsed");
             left_container.classList.add("collapsed");
@@ -362,72 +426,98 @@ class Main extends (Evented) {
             domClass.toggle(listToggleBtn, "icon-ui-up-arrow icon-ui-down-arrow");
             // TOGGLE VISIBILITY OF CLOSABLE PANELS //
             up_container.classList.toggle("collapsed");
-            document.getElementById("auto-scroll-container").classList.toggle("collapsed");
-        });
+            const scroll_container = document.getElementById("auto-scroll-container");
+            if (scroll_container) {
+                scroll_container.classList.toggle("collapsed");
+            }
 
+        });
         // VIEW UPDATING //
-        const updating_node = domConstruct.create("div", {className: "view-loading-node loader text-center padding-leader-0 padding-trailer-0"});
+        const updating_node = domConstruct.create("div", { className: "view-loading-node loader text-center padding-leader-0 padding-trailer-0" });
         updating_node.innerHTML = `<div class="loader-bars"></div><div class="loader-text font-size--3">${i18n.notifications.updating} ...</div>`
+
         view.ui.add(updating_node, "bottom-right");
         watchUtils.init(view, "updating", (updating) => {
             domClass.toggle(updating_node, "is-active", updating);
         });
         // POPUP DOCKING OPTIONS //
-        // TODO: FIGURE OUT HOW TO SYNC POPUP WINDOWS...
         view.popup.dockEnabled = true;
         view.popup.dockOptions = {
             buttonEnabled: false,
             breakpoint: false,
             position: "bottom-left"
         };
-        // Do we want any of these to be options? If so we 
-        // can conditionally load. If not just switch out to 
-        // import 
+
         if (this.base.config.search) {
             requireUtils.when(require, [
                 "esri/widgets/Search"
             ]).then(([
-                         Search
-                     ]) => {
-                const search = new Search({view, searchTerm: this.base.config.searchTerm || ""});
+                Search
+            ]) => {
+                const search = new Search({ view, searchTerm: this.base.config.searchTerm || "" });
                 const searchExpand = new Expand({
                     view,
                     mode: "floating",
                     content: search
                 });
-                view.ui.add(searchExpand, {position: this.base.config.searchPosition, index: 0});
+                view.ui.add(searchExpand, { position: this.base.config.searchPosition, index: 0 });
             });
         }
         if (this.base.config.basemaps) {
             requireUtils.when(require, [
-                "esri/widgets/BasemapGallery"
+                "esri/widgets/BasemapGallery",
+                "esri/widgets/BasemapGallery/support/PortalBasemapsSource"
             ]).then(([
-                         BasemapGallery
-                     ]) => {
+                BasemapGallery, PortalBasemapsSource
+            ]) => {
+                // add the current basemap to the gallery if its not already there
+                const source = new PortalBasemapsSource({
+                    updateBasemapsCallback: (portalBasemaps) => {
+                        let found = false;
+                        if (view.map && view.map.basemap && view.map.basemap.thumbnailUrl && view.map.basemap.thumbnailUrl.indexOf("js.arcgis.com") !== -1) {
+                            // if it's an esri basemap don't add
+                            found = true;
+                        }
+                        else {
+                            portalBasemaps.forEach(function(basemap) {
+                                if (basemap && basemap.portalItem && basemap.portalItem.title === view.map.basemap.title) {
+                                    found = true;
+                                }
+                            });
+                        }
+                        if (!found) {
+                            return [view.map.basemap, ...portalBasemaps]
+                        } else {
+                            return portalBasemaps;
+                        }
+                        // return [view.map.basemap, ...portalBasemaps]
+                    }
+                });
 
                 const basemapGallery = new BasemapGallery({
                     view,
-                    source: this.base.portal
+                    source: source//this.base.portal
                 });
 
                 const basemapGalleryExpand = new Expand({
                     view,
+                    mode: "floating",
                     content: basemapGallery,
                     expandTooltip: i18n.map.basemapExpand.tooltip
                 });
-                view.ui.add(basemapGalleryExpand, {position: this.base.config.basemapsPosition, index: 1});
+                view.ui.add(basemapGalleryExpand, { position: this.base.config.basemapsPosition, index: 1 });
 
             });
         }
 
-        const homeWidget = new Home({view});
-        view.ui.add(homeWidget, {position: "top-left", index: 2});
+        const homeWidget = new Home({ view });
+        view.ui.add(homeWidget, { position: "top-left", index: 2 });
 
         // VIEW TYPE SPECIFIC //
         if (view.type === "2d") {
             // MapView //
-            const compass = new Compass({view});
-            view.ui.add(compass, {position: "top-left", index: 5});
+            const compass = new Compass({ view });
+            view.ui.add(compass, { position: "top-left", index: 5 });
         } else if (view.type === "3d" && this.base.config.spinGlobe) {
             // SceneView //
             this.initializeViewSpinTools(view as SceneView);
@@ -440,7 +530,6 @@ class Main extends (Evented) {
         // RETURN THE VIEW //
         return view;
     }
-
     /**
      * INITIALIZE LAYER LIST WIDGET
      *  - REORDER, DETAILS, ZOOM TO, REMOVE
@@ -452,39 +541,41 @@ class Main extends (Evented) {
     initializeLayerList(view: any) {
         view = (view && view.type === "2d") ? view as MapView : view as SceneView;
         // LAYERS PANEL //
-        const layers_panel = domConstruct.create("div", {className: "panel panel-no-padding"});
-        const action_node = domConstruct.create("div", {className: "panel panel-dark-blue panel-no-padding padding-left-half padding-right-1 font-size-0"}, layers_panel);
-        domConstruct.create("span", {innerHTML: i18n.map.layers_panel.innerHTML}, action_node);
-        const actionTools = domConstruct.create("span", {className: "action-node hide"}, action_node);
+        const layers_panel = domConstruct.create("div", { className: "panel panel-no-border panel-no-padding layer-panel" });
+        const action_node = domConstruct.create("div", { className: "panel panel-no-border text-black padding-left-half padding-right-1 font-size-0" }, layers_panel);
+        domConstruct.create("span", { innerHTML: i18n.map.layers_panel.innerHTML }, action_node);
+        // Hiding remove all layers, hide all layers and show all layers based on holistic testing feedback
+        // We'll review the UX for this and add this capability back at the next release. 
+        //const actionTools = domConstruct.create("span", { className: "action-node hide" }, action_node);
         // REMOVE ALL LAYERS //
-        const remove_layers_btn = domConstruct.create("button", {
+        /*const remove_layers_btn = domConstruct.create("button", {
             className: "btn btn-transparent btn-small icon-ui-close-circled icon-ui-flush esri-interactive right",
             title: i18n.map.remove_layers.title
         }, actionTools);
-
+ 
         remove_layers_btn.addEventListener("click", () => {
             view.map.layers.removeAll();
             this.displayItemDetails();
-        });
+        });*/
 
         // SET LAYERS VISIBILITY //
-        const show_layers_btn = domConstruct.create("button", {
-            className: "btn btn-transparent btn-small icon-ui-checkbox-checked esri-interactive right",
-            title: i18n.map.show_layers.title
-        }, actionTools);
-        show_layers_btn.addEventListener("click", () => {
-            this.setAllLayersVisibility(true);
-            this.displayItemDetails();
-        });
+        /* const show_layers_btn = domConstruct.create("button", {
+             className: "btn btn-transparent btn-small icon-ui-checkbox-checked esri-interactive right",
+             title: i18n.map.show_layers.title
+         }, actionTools);
+         show_layers_btn.addEventListener("click", () => {
+             this.setAllLayersVisibility(true);
+             this.displayItemDetails();
+         });*/
 
-        const hide_layers_btn = domConstruct.create("button", {
-            className: "btn btn-transparent btn-small icon-ui-checkbox-unchecked esri-interactive right",
-            title: i18n.map.hide_layers.title
-        }, actionTools);
-        hide_layers_btn.addEventListener("click", () => {
-            this.setAllLayersVisibility(false);
-            this.displayItemDetails();
-        });
+        /* const hide_layers_btn = domConstruct.create("button", {
+             className: "btn btn-transparent btn-small icon-ui-checkbox-unchecked esri-interactive right",
+             title: i18n.map.hide_layers.title
+         }, actionTools);
+         hide_layers_btn.addEventListener("click", () => {
+             this.setAllLayersVisibility(false);
+             this.displayItemDetails();
+         });*/
         // CREATE OPACITY NODE //
         const createOpacityNode = (item, parent_node) => {
             const opacity_node = domConstruct.create("div", {
@@ -508,11 +599,11 @@ class Main extends (Evented) {
         // CREATE TOOLS NODE //
         const createToolsNode = (item, parent_node) => {
             // TOOLS NODE //
-            const tools_node = domConstruct.create("div", {className: "esri-widget"}, parent_node, "first");
+            const tools_node = domConstruct.create("div", { className: "esri-widget" }, parent_node, "first");
 
             // REORDER //
 
-            const reorder_node = domConstruct.create("div", {className: "inline-block"}, tools_node);
+            const reorder_node = domConstruct.create("div", { className: "inline-block" }, tools_node);
             // only display reorder layer buttons when more than one layer is added to layer list 
             if (layerList.operationalItems.length > 1) {
                 const reorder_up_node = domConstruct.create("button", {
@@ -544,7 +635,8 @@ class Main extends (Evented) {
             // ZOOM TO //
             const zoom_to_node = domConstruct.create("button", {
                 className: "btn-link icon-ui-zoom-in-magnifying-glass right",
-                title: i18n.map.zoom_to_layer.title
+                title: i18n.map.zoom_to_layer.title,
+                disabled: item.layer.type === "group" ? true : false // disable zoom for group layers
             }, tools_node);
             zoom_to_node.addEventListener("click", () => {
                 view.goTo(item.layer.fullExtent);
@@ -557,6 +649,10 @@ class Main extends (Evented) {
             }, tools_node);
             on(info_node, "click", () => {
                 this.displayItemDetails(item.layer.portalItem);
+                // open the panel if closed
+                if (domClass.contains("item-info-container", "collapsed")) {
+                    domClass.remove("item-info-container", "collapsed");
+                }
             });
 
             return tools_node;
@@ -565,12 +661,12 @@ class Main extends (Evented) {
         // CREATE LEGEND NODE //
         const createLegendNode = (item, parent_node) => {
 
-            const legend_panel = domConstruct.create("div", {className: "legend-panel esri-widget"}, parent_node);
+            const legend_panel = domConstruct.create("div", { className: "legend-panel esri-widget" }, parent_node);
 
             const legend = new Legend({
                 container: domConstruct.create("div", {}, legend_panel),
                 view,
-                layerInfos: [{layer: item.layer}]
+                layerInfos: [{ layer: item.layer }]
             });
 
             const legend_toggle_node = domConstruct.create("button", {
@@ -597,7 +693,7 @@ class Main extends (Evented) {
                 let item = evt.item;
                 if (item.layer && item.layer.portalItem) {
                     // CREATE ITEM PANEL //
-                    const panel_node = domConstruct.create("div", {className: "esri-widget"});
+                    const panel_node = domConstruct.create("div", { className: "esri-widget" });
 
                     // LAYER TOOLS //
                     createToolsNode(item, panel_node);
@@ -622,24 +718,24 @@ class Main extends (Evented) {
         // LAYER LIST EXPAND //
         const layerListExpand = new Expand({
             view,
-            content: layers_panel,
             mode: "floating",
+            content: layers_panel,
             iconNumber: 0,
             expandIconClass: "esri-icon-layers",
             expandTooltip: i18n.map.layerlist_expand.tooltip
         });
-        view.ui.add(layerListExpand, {position: "top-right", index: 1});
+        view.ui.add(layerListExpand, { position: "top-right", index: 1 });
 
         // LAYER COUNT //
         view.map.layers.on("change", () => {
             layerListExpand.iconNumber = view.map.layers.length;
             //hide show layer (add,remove and clear) icons when layers are visible. 
-            view.map.layers.length > 0 ? domClass.remove(actionTools, "hide") : domClass.add(actionTools, "hide");
+            // view.map.layers.length > 0 ? domClass.remove(actionTools, "hide") : domClass.add(actionTools, "hide");
         });
 
         // SYNCHRONIZE LAYERLIST EXPANDS //
         layerListExpand.watch("expanded", (expanded) => {
-            this.emit("layerlist-expanded", {expanded: expanded, source: layerListExpand});
+            this.emit("layerlist-expanded", { expanded: expanded, source: layerListExpand });
         });
         this.on("layerlist-expanded", evt => {
             if ((evt.source !== layerListExpand) && (evt.expanded !== layerListExpand.expanded)) {
@@ -647,7 +743,6 @@ class Main extends (Evented) {
             }
         });
     }
-
     initializeViewSpinTools(view: SceneView) {
         let spin_direction = "none";
         let spin_handle = null;
@@ -668,7 +763,7 @@ class Main extends (Evented) {
                     // MAINTAIN CURRENT HEADING OR FORCE UP //
                     camera.heading = always_up ? 0.0 : camera.heading;
                 }
-                spin_handle = view.goTo(camera, {animate: false}).then(() => {
+                spin_handle = view.goTo(camera, { animate: false }).then(() => {
                     if (spin_direction !== "none") {
                         setTimeout(() => {
                             requestAnimationFrame(_spin);
@@ -687,20 +782,10 @@ class Main extends (Evented) {
             }
         };
 
-        const viewSpinNode = domConstruct.create("div", {className: "view-spin-node"}, view.root);
-        const spinLeftBtn = domConstruct.create("button", {
-            className: "btn btn-transparent spin-btn icon-ui-arrow-left-circled icon-ui-flush font-size-2 esri-interactive",
-            title: i18n.spin_tool.spin_left.title
-        }, viewSpinNode);
-        const alwaysUpBtn = domConstruct.create("button", {
-            id: "always-up-btn",
-            className: "btn btn-transparent spin-btn icon-ui-compass icon-ui-flush font-size--1 esri-interactive",
-            title: i18n.spin_tool.always_up.title
-        }, viewSpinNode);
-        const spinRightBtn = domConstruct.create("button", {
-            className: "btn btn-transparent spin-btn icon-ui-arrow-right-circled icon-ui-flush font-size-2 esri-interactive",
-            title: i18n.spin_tool.spin_right.title
-        }, viewSpinNode);
+        const viewSpinNode = domConstruct.create("div", { className: "view-spin-node" }, view.root);
+        const spinLeftBtn = domConstruct.create("button", { className: "btn btn-transparent spin-btn icon-ui-arrow-left-circled icon-ui-flush font-size-2 esri-interactive", title: i18n.spin_tool.spin_left.title }, viewSpinNode);
+        const alwaysUpBtn = domConstruct.create("button", { id: "always-up-btn", className: "btn btn-transparent spin-btn icon-ui-compass icon-ui-flush font-size--1 esri-interactive", title: i18n.spin_tool.always_up.title }, viewSpinNode);
+        const spinRightBtn = domConstruct.create("button", { className: "btn btn-transparent spin-btn icon-ui-arrow-right-circled icon-ui-flush font-size-2 esri-interactive", title: i18n.spin_tool.spin_right.title }, viewSpinNode);
 
         // SPIN LEFT //
         spinLeftBtn.addEventListener("click", () => {
@@ -729,7 +814,6 @@ class Main extends (Evented) {
 
         });
     }
-
     /**
      * SYNCHRONIZE VIEWS
      *
@@ -757,12 +841,8 @@ class Main extends (Evented) {
             };
 
             const interactWatcher = view.watch('interacting,animation', (newValue) => {
-                if (!newValue) {
-                    return;
-                }
-                if (viewpointWatchHandle || scheduleId) {
-                    return;
-                }
+                if (!newValue) { return; }
+                if (viewpointWatchHandle || scheduleId) { return; }
 
                 if (!view.animation) {
                     others.forEach((otherView) => {
@@ -783,9 +863,7 @@ class Main extends (Evented) {
                 // stop as soon as another view starts interacting, like if the user starts panning
                 otherInteractHandlers = others.map((otherView) => {
                     return watchUtils.watch(otherView, 'interacting,animation', (value) => {
-                        if (value) {
-                            clear();
-                        }
+                        if (value) { clear(); }
                     });
                 });
 
@@ -825,12 +903,33 @@ class Main extends (Evented) {
         // INIT SYNC VIEWS //
         synchronizeViews(Array.from(views_infos));
     }
-
+    disableGalleryNavigation(overflow: boolean, navElements: HTMLCollection) {
+        for (let i = 0; i < navElements.length; i++) {
+            const elem = navElements[i];
+            !overflow ? elem.classList.add("nav-hide") : elem.classList.remove("nav-hide");
+        }
+    }
     initializeItemListScroll() {
         // CONTENT CONTAINER //
         const content_container = document.getElementById("content-container-parent");
         const content_box = domGeom.getContentBox(content_container);
         const scrollLeftMax = (content_container.scrollWidth - content_box.w);
+        // Check to see if we should show nav buttons or not 
+        const navElements = document.getElementsByClassName("gallery-nav");
+        this.disableGalleryNavigation(content_container.scrollWidth > content_container.offsetWidth, navElements);
+
+        let resizeTimeout;
+        window.addEventListener("resize", () => {
+            // ignore resize events as long as an actualResizeHandler execution is in the queue
+            if (!resizeTimeout) {
+                resizeTimeout = setTimeout(() => {
+                    resizeTimeout = null;
+                    this.disableGalleryNavigation(content_container.scrollWidth > content_container.offsetWidth, navElements);
+                    // The actualResizeHandler will execute at a rate of 15fps
+                }, 66);
+            }
+        }, false);
+
 
         // SCROLL OPTIONS //
         const scroll_options = {
@@ -916,33 +1015,36 @@ class Main extends (Evented) {
             scroll_options.distance = scroll_options.manual_distance;
             scroll_options.auto = false;
         });
-        // INITIATE AUTO SCROLL //
-        document.getElementById("auto-scroll-left").addEventListener("click", () => {
-            if (scroll_options.direction === "LEFT") {
-                auto_scroll();
-            } else {
-                auto_scroll("LEFT");
+        if (this.base.config.autoNavScroll) {
+            document.getElementById("auto-scroll-container").classList.remove("hide");
+            // INITIATE AUTO SCROLL //
+            document.getElementById("auto-scroll-left").addEventListener("click", () => {
+                if (scroll_options.direction === "LEFT") {
+                    auto_scroll();
+                } else {
+                    auto_scroll("LEFT");
+                }
+            });
+            document.getElementById("auto-scroll-right").addEventListener("click", () => {
+                if (scroll_options.direction === "RIGHT") {
+                    auto_scroll();
+                } else {
+                    auto_scroll("RIGHT");
+                }
+            });
+            // AUTO SCROLL ON STARTUP //
+            if (this.base.config.autoScroll) {
+                setTimeout(() => {
+                    auto_scroll("RIGHT");
+                }, 1500);
             }
-        });
-        document.getElementById("auto-scroll-right").addEventListener("click", () => {
-            if (scroll_options.direction === "RIGHT") {
+            // RESET //
+            document.getElementById("auto-scroll-reset").addEventListener("click", () => {
                 auto_scroll();
-            } else {
-                auto_scroll("RIGHT");
-            }
-        });
-        // AUTO SCROLL ON STARTUP //
-        if (this.base.config.autoScroll) {
-            setTimeout(() => {
-                auto_scroll("RIGHT");
-            }, 1500);
-        }
+                content_container.scrollLeft = 0;
+            });
 
-        // RESET //
-        document.getElementById("auto-scroll-reset").addEventListener("click", () => {
-            auto_scroll();
-            content_container.scrollLeft = 0;
-        });
+        }
 
         // MANUALLY SCROLL LIST //
         const content_list = document.getElementById("content-container");
@@ -963,7 +1065,6 @@ class Main extends (Evented) {
             });
         });
     }
-
     /**
      * INITIALIZE GROUP CONTENT
      *
@@ -972,13 +1073,16 @@ class Main extends (Evented) {
 
     async initializeGroupContent(group_id) {
         // FIND GROUP //
-        const groupResponse = await this.base.portal.queryGroups({query: `id:${group_id}`});
+        const groupResponse = await this.base.portal.queryGroups({ query: `id:${group_id}` });
         // DID WE FIND THE GROUP
         if (groupResponse.results.length > 0) {
             //CONFIGURED GROUP // 
             const portal_group = groupResponse.results[0];
 
             // INITIALIZE PANEL CONTENT AND GET FUNCTION TO DISPLAY ITEM DETAILS //
+            if (!portal_group.description || this.base.config.description) {
+                portal_group.description = this.base.config.description;
+            }
             this.displayItemDetails = this.initializePanelContent(portal_group);
             // SEARCH FOR GROUP ITEMS //
             return this.getGroupItems(portal_group, 1).then(() => {
@@ -988,20 +1092,19 @@ class Main extends (Evented) {
         } else {
             // WE DIDN'T FIND THE GROUP, SO LET'S FORCE THE USER TO SIGN IN AND TRY AGAIN //
             // TODO: DO WE STILL NEED THIS?
-            return this.initializeUserSignIn(true).always(() => {
+            return this.initializeUserSignIn(true).then(() => {
                 return this.initializeGroupContent(group_id);
             });
         }
     }
-
     /**
-     * QUERY FOR LAYER ITEMS IN THE GROUP
-     *  - ONLY ONE SEARCH SO MAXIMUM 100 ITEMS RETURNED
-     *  - USES GROUP CONFIGURED SORT PARAMETERS
-     *
-     * @param portalGroup
-     * @param start
-     */
+    * QUERY FOR LAYER ITEMS IN THE GROUP
+    *  - ONLY ONE SEARCH SO MAXIMUM 100 ITEMS RETURNED
+    *  - USES GROUP CONFIGURED SORT PARAMETERS
+    *
+    * @param portalGroup
+    * @param start
+    */
     getGroupItems(portalGroup, start) {
         // SEARCH QUERY //
         // TODO: DO WE INCLUDE CURRENT CULTURE IN THE QUERY?
@@ -1020,7 +1123,6 @@ class Main extends (Evented) {
             return queryResults;
         });
     }
-
     /**
      * CREATE A SCROLLABLE LIST OF LAYER ITEMS NODES //
      *
@@ -1031,13 +1133,14 @@ class Main extends (Evented) {
         layer_items.forEach(layer_item => {
             // LAYER ITEM NODE //
             const item_node = domConstruct.create("li", {
-                className: "content-item",
+                className: "content-item"
             }, "content-container");
+            const thumbnail = layer_item.thumbnailUrl || "./assets/ago_downloaded.png";
 
             // THUMBNAIL NODE //
             domConstruct.create("img", {
                 className: "content-item-img",
-                src: layer_item.thumbnailUrl,
+                src: thumbnail,
                 alt: layer_item.title
             }, item_node);
 
@@ -1058,15 +1161,27 @@ class Main extends (Evented) {
                 title: i18n.item.add_to_map_only_visible.title
             }, action_node);
 
-            // TITLE NODE //
+            // TITLE NODE - REPLACE UNDERSCORES SO TITLES WRAP //
+            const title = layer_item.title ? layer_item.title.replace(/_/g, " ").trim() : "";
+
             const item_title_node = domConstruct.create("button", {
                 className: "content-item-title btn btn-transparent avenir-demi font-size-0 esri-interactive icon-ui-description",
-                innerHTML: layer_item.title.trim()
+                innerHTML: title,
+                title
             }, item_node);
+            // Add ellipsis if title is too long
+            if (title && title.length > 15) {
+                window.$clamp(item_title_node, { clamp: 2, useNativeClamp: true });
+            }
+
 
             // DISPLAY ITEM DETAILS //
             item_title_node.addEventListener("click", () => {
                 this.displayItemDetails(layer_item);
+                // open the panel if closed
+                if (domClass.contains("item-info-container", "collapsed")) {
+                    domClass.remove("item-info-container", "collapsed");
+                }
             });
             // ADD LAYER //
             add_btn.addEventListener("click", () => {
@@ -1082,13 +1197,12 @@ class Main extends (Evented) {
 
         });
     }
-
     /**
-     * SET PANEL CONTENT TO LAYER ITEM OR GROUP
-     *
-     * @param portal_group
-     * @returns {function(*=)}
-     */
+    * SET PANEL CONTENT TO LAYER ITEM OR GROUP
+    *
+    * @param portal_group
+    * @returns {function(*=)}
+    */
     initializePanelContent(portal_group) {
         // UPDATE THE PANEL CONTENT WITH INFORMATION ABOUT A LAYER ITEM OR THE CONFIGURED GROUP //
         const display_content = (item_or_group) => {
@@ -1097,8 +1211,10 @@ class Main extends (Evented) {
                 const type = (item_or_group.declaredClass === "esri.portal.PortalGroup") ? "group" : "item";
                 domClass.toggle("content-reset-node", "hide", (type === "group"));
                 // TITLE //
-                document.getElementById("content-title-label").innerHTML = item_or_group.title;
-                document.getElementById("content-title-label").title = item_or_group.snippet || "";
+                const titleDiv = document.getElementById("content-title-label");
+                titleDiv.innerHTML = item_or_group.title;
+                titleDiv.title = item_or_group.snippet || item_or_group.title || "";
+
                 // DETAILS LINK //
                 const detailsLink = document.getElementById("content-details-link") as HTMLLinkElement;
                 detailsLink.href = `${this.base.portal.url}/home/${type}.html?id=${item_or_group.id}`;
@@ -1126,11 +1242,11 @@ class Main extends (Evented) {
     }
 
     /**
-     * ADD ITEM TO MAP
-     *  - IF THE LAYER IS ALREADY IN THE MAP, JUST MAKE SURE IT'S VISIBLE
-     *
-     * @param map
-     */
+    * ADD ITEM TO MAP
+    *  - IF THE LAYER IS ALREADY IN THE MAP, JUST MAKE SURE IT'S VISIBLE
+    *
+    * @param map
+    */
     _addItemToMap(map) {
         return (item) => {
             // IS LAYER ALREADY IN THE MAP //
@@ -1178,11 +1294,10 @@ class Main extends (Evented) {
         if (itemLike.declaredClass === "esri.portal.PortalItem") {
             return itemLike.loaded ? promiseUtils.resolve(itemLike) : itemLike.load();
         } else {
-            const item = new PortalItem({id: itemLike.id});
+            const item = new PortalItem({ id: itemLike.id });
             return item.load();
         }
     }
-
     /**
      * GET THE LAYER FROM THE PortalItem
      *  - APPLY OVERRIDES IF AVAILABLE
@@ -1196,7 +1311,7 @@ class Main extends (Evented) {
             // IS ITEM A LAYER //
             if (item.isLayer) {
                 // CREATE LAYER FROM ITEM //
-                return Layer.fromPortalItem({portalItem: item}).then((layer) => {
+                return Layer.fromPortalItem({ portalItem: item }).then((layer) => {
                     // LOAD LAYER //
                     return layer.load().then(() => {
                         // FETCH ITEM OVERRIDES //
@@ -1253,7 +1368,6 @@ class Main extends (Evented) {
         });
 
     }
-
     /**
      * ADD A LAYER ITEM NOTIFICATION
      *
@@ -1267,19 +1381,15 @@ class Main extends (Evented) {
             className: error ? CSS.NOTIFICATION_TYPE.ERROR : CSS.NOTIFICATION_TYPE.SUCCESS
         }, notificationsNode);
 
-        const alertCloseNode = domConstruct.create("div", {className: "inline-block esri-interactive icon-ui-close margin-left-1 right"}, alertNode);
+        const alertCloseNode = domConstruct.create("div", { className: "inline-block esri-interactive icon-ui-close margin-left-1 right" }, alertNode);
         on.once(alertCloseNode, "click", () => {
             domConstruct.destroy(alertNode);
         });
-        domConstruct.create("div", {innerHTML: error ? error.message : lang.replace(i18n.notifications.layer_added_template, layer_item)}, alertNode);
+        domConstruct.create("div", { innerHTML: error ? error.message : lang.replace(i18n.notifications.layer_added_template, layer_item) }, alertNode);
 
         if (error != null) {
             const itemDetailsPageUrl = `${this.base.portal.url}/home/item.html?id=${layer_item.id}`;
-            domConstruct.create("a", {
-                innerHTML: i18n.notifications.view_details.innerHTML,
-                target: "_blank",
-                href: itemDetailsPageUrl
-            }, alertNode);
+            domConstruct.create("a", { innerHTML: i18n.notifications.view_details.innerHTML, target: "_blank", href: itemDetailsPageUrl }, alertNode);
         } else {
             setTimeout(() => {
                 domClass.toggle(alertNode, "animate-in-up animate-out-up");
@@ -1299,36 +1409,100 @@ class Main extends (Evented) {
     initializeCreateOnlineMap(map_infos) {
         document.getElementById("create-map-btn").addEventListener("click", () => {
             // CURRENT VIEW //
-            const inputElement = document.getElementById("display-type-input") as HTMLInputElement;
-            const display_type = inputElement.checked ? "2d" : "3d";
-            const view = map_infos.views.get(display_type);
-
-            // MAP VIEWER URL //
-            let map_viewer_url_parameters = `center=${view.center.longitude},${view.center.latitude}&level=${Math.floor(view.zoom)}&`;
-
-            // BASEMAP URL //
-            if (map_infos.map.basemap.baseLayers.length > 0) {
-                // ASSUMES THERE'S ONLY ONE //
-                map_viewer_url_parameters += `basemapUrl=${map_infos.map.basemap.baseLayers.getItemAt(0).url}&`;
+            let display_type = this.base.config.displayMode;
+            if (this.base.config.displayMode === "both") {
+                const inputElement = document.getElementById("display-type-input") as HTMLInputElement;
+                display_type = !inputElement.checked ? "2d" : "3d";
             }
-            // REFERENCE URL //
-            if (map_infos.map.basemap.referenceLayers.length > 0) {
-                // ASSUMES THERE'S ONLY ONE //
-                map_viewer_url_parameters += `basemapReferenceUrl=${map_infos.map.basemap.referenceLayers.getItemAt(0).url}&`;
-            }
-
-            // LAYERS //
-            const layer_ids = map_infos.map.layers.map(layer => {
-                return layer.portalItem.id;
+            // TODO handle web scene url params and also different projections
+            let view;
+            map_infos.views.forEach((info) => {
+                if (info.type === display_type) {
+                    view = info;
+                }
             });
-            map_viewer_url_parameters += `layers=${layer_ids.join(",")}`;
+            if (view) {
+                const { x, y } = view.center;
+                const { spatialReference } = view;
+                const centerPoint = new Point({
+                    x,
+                    y,
+                    spatialReference
+                });
+                this.processPoint(centerPoint).then((point) => {
+                    if (point) {
+                        let urlParams;
+                        if (display_type === "3d") {
+                            const { camera } = view as SceneView;
+                            //'viewpoint=cam:posx,posy,posz,wkid;heading,tilt'
+                            urlParams = `viewpoint=cam:${camera.position.x},${camera.position.y},${camera.position.z},${camera.position.spatialReference.wkid};${camera.heading},${camera.tilt}`;
 
-            // MAP VIEWER URL //
-            const map_viewer_url = `${this.base.portal.url}/home/webmap/viewer.html`;
+                        } else {
+                            const { longitude, latitude } = point;
+                            const { zoom } = view;
+                            urlParams = `center=${longitude},${latitude}&level=${zoom.toFixed(0)}`
+                        }
+                        if (map_infos.map.basemap.baseLayers.length > 0) {
+                            // ASSUMES THERE'S ONLY ONE //
+                            urlParams += `&basemapUrl=${map_infos.map.basemap.baseLayers.getItemAt(0).url}`;
+                        }
+                        // REFERENCE URL //
+                        if (map_infos.map.basemap.referenceLayers.length > 0) {
+                            // ASSUMES THERE'S ONLY ONE //
+                            urlParams += `&basemapReferenceUrl=${map_infos.map.basemap.referenceLayers.getItemAt(0).url}`;
+                        }
+                        // LAYERS //
+                        const layer_ids = map_infos.map.layers.map(layer => {
+                            return layer.portalItem.id;
+                        });
+                        if (layer_ids) {
+                            urlParams += `&layers=${layer_ids.join(",")}`;
+                        }
+                        const viewerUrl = `${this.base.portal.url}/home/${display_type === "3d" ? "webscene" : "webmap"}/viewer.html`;
+                        window.open(`${viewerUrl}?${urlParams}`);
+                    } else {
+                        // TODO error handling
+                        console.log("Unable to project point");
+                    }
 
-            // OPEN MAP VIEWER //
-            window.open(`${map_viewer_url}?${map_viewer_url_parameters}`);
+                });
+
+            }
+
         });
+    }
+
+    processPoint(point) {
+
+        const { isWGS84, isWebMercator } = point.spatialReference;
+        // If spatial reference is WGS84 or Web Mercator, use longitude/latitude values to generate the share URL parameters
+        if (!isWGS84 || !isWebMercator) {
+            return promiseUtils.resolve(point);
+        }
+        requireUtils.when(require, [
+            "esri/geometry/projection",
+            "esri/geometry/SpatialReference"
+        ]).then(([
+            projection,
+            SpatialReference
+        ]) => {
+            const outputSpatialReference = new SpatialReference({
+                wkid: 4326
+            });
+            return projection.load().then(() => {
+                if (!projection.isSupported) {
+                    // no client side projection
+                    return (promiseUtils.resolve(new Point({
+                        x: null,
+                        y: null
+                    })));
+                }
+                return promiseUtils.resolve(projection.project(point, outputSpatialReference));
+            });
+
+        });
+
+        return promiseUtils.resolve();
     }
 }
 

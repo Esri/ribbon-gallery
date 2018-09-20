@@ -5,8 +5,6 @@ Array.from not supported in IE11 so we also conditionally add a polyfill
 interface ArrayConstructor {
     from(arrayLike: any, mapFn?, thisArg?): Array<any>;
 }
-
-
 declare namespace __esri {
     interface View extends Accessor, corePromise, DOMContainer {
         root?: string;
