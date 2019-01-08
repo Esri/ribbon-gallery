@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "La licence de votre compte ne permet pas d’utiliser des applications configurables non publiques. Demandez à l’administrateur de votre organisation de vous attribuer un type d’utilisateur qui inclut une licence Essential Apps ou une licence Essential Apps additionnelle.",
+    "title": "Pas de licence"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "Défilement automatique à droite"
@@ -69,7 +73,7 @@ define({
       "title": "Descendre la couche"
     },
     "remove_layer": {
-      "title": "Supprimer la couche de la carte"
+      "title": "Supprimer la couche"
     },
     "zoom_to_layer": {
       "title": "Zoom sur la couche"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "Ajouter à la carte"
+      "title": "Ajouter"
     },
     "add_to_map_only_visible": {
-      "title": "Ajouter à la carte (comme seule couche visible)"
+      "title": "Ajouter (comme seule couche visible)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "L'élément ne comporte pas de description détaillée."
   },
   "notifications": {
-    "layer_added_template": "La couche '{title}' a été ajoutée à la carte.",
+    "layer_added_template": "La couche '{title}' a été ajoutée.",
     "view_details": {
       "innerHTML": "afficher les détails"
     },

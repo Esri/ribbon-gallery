@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "L’account non dispone della licenza per l’uso di app configurabili non pubbliche. È necessario richiedere all’amministratore dell'organizzazione l’assegnazione di un tipo di utente che includa le app essenziali o una licenza aggiuntiva per le app essenziali.",
+    "title": "Non Licenziato"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "Scorrimento automatico a destra"
@@ -69,7 +73,7 @@ define({
       "title": "Sposta layer giù"
     },
     "remove_layer": {
-      "title": "Rimuovi layer dalla mappa"
+      "title": "Rimuovi layer"
     },
     "zoom_to_layer": {
       "title": "Zoom al layer"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "Aggiungi alla mappa"
+      "title": "Aggiungi"
     },
     "add_to_map_only_visible": {
-      "title": "Aggiungi alla mappa (come unico layer visibile)"
+      "title": "Aggiungi (come unico layer visibile)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "Una descrizione dettagliata dell'elemento non è disponibile."
   },
   "notifications": {
-    "layer_added_template": "Layer ‘{titolo}’ aggiunto con successo alla mappa.",
+    "layer_added_template": "Layer '{title}' aggiunto con successo.",
     "view_details": {
       "innerHTML": "Visualizza dettagli"
     },

@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "Contul dvs. nu este licențiat să utilizeze aplicații configurabile care nu sunt publice. Solicitați-i administratorului organizației să vă aloce un tip de utilizator care include aplicații esențiale sau o licență pentru aplicații esențiale de completare.",
+    "title": "Nelicențiat"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "Derulare automată la dreapta"
@@ -69,7 +73,7 @@ define({
       "title": "Deplasare strat tematic în jos"
     },
     "remove_layer": {
-      "title": "Eliminați stratul tematic de pe hartă"
+      "title": "Eliminare strat tematic"
     },
     "zoom_to_layer": {
       "title": "Transfocare la strat tematic"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "Adăugare la hartă"
+      "title": "Adăugare"
     },
     "add_to_map_only_visible": {
-      "title": "Adăugare la hartă (ca singurul strat tematic vizibil)"
+      "title": "Adăugare (ca singurul strat tematic vizibil)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "Nu este disponibilă o descriere amănunțită a elementului."
   },
   "notifications": {
-    "layer_added_template": "Stratul tematic '{title}' a fost adăugat cu succes la hartă.",
+    "layer_added_template": "Stratul tematic '{title}' a fost adăugat cu succes.",
     "view_details": {
       "innerHTML": "vizualizarea detaliilor"
     },

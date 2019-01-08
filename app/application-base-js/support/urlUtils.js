@@ -1,5 +1,5 @@
 /*
-  Copyright 2018 Esri
+  Copyright 2017 Esri
 
   Licensed under the Apache License, Version 2.0 (the "License");
 
@@ -19,20 +19,17 @@
 
   limitations under the License.​
 */
-var __assign = (this && this.__assign) || Object.assign || function (t) {
+var __assign = (this && this.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
-        for (var p in s)
-            if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
     }
     return t;
 };
 define(["require", "exports", "esri/Camera", "esri/core/promiseUtils", "esri/core/requireUtils", "esri/geometry/Extent", "esri/geometry/Point"], function (require, exports, Camera, promiseUtils, requireUtils, Extent, Point) {
     "use strict";
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
+    Object.defineProperty(exports, "__esModule", { value: true });
     //--------------------------------------------------------------------------
     //
     //  Public Methods
@@ -45,7 +42,6 @@ define(["require", "exports", "esri/Camera", "esri/core/promiseUtils", "esri/cor
         return components.split(",");
     }
     exports.parseViewComponents = parseViewComponents;
-
     function parseViewpoint(viewpoint) {
         // ?viewpoint=cam:-122.69174973,45.53565982,358.434;117.195,59.777
         var viewpointArray = viewpoint && viewpoint.split(";");
@@ -63,7 +59,6 @@ define(["require", "exports", "esri/Camera", "esri/core/promiseUtils", "esri/cor
         return;
     }
     exports.parseViewpoint = parseViewpoint;
-
     function parseCenter(center) {
         // ?center=-13044705.25,4036227.41,102113&level=12
         // ?center=-13044705.25;4036227.41;102113&level=12
@@ -92,12 +87,10 @@ define(["require", "exports", "esri/Camera", "esri/core/promiseUtils", "esri/cor
         });
     }
     exports.parseCenter = parseCenter;
-
     function parseLevel(level) {
         return level && parseInt(level, 10);
     }
     exports.parseLevel = parseLevel;
-
     function parseExtent(extent) {
         // ?extent=-13054125.21,4029134.71,-13032684.63,4041785.04,102100
         // ?extent=-13054125.21;4029134.71;-13032684.63;4041785.04;102100
@@ -111,10 +104,7 @@ define(["require", "exports", "esri/Camera", "esri/core/promiseUtils", "esri/cor
         if (extentLength < 4) {
             return null;
         }
-        var xmin = parseFloat(extentArray[0]),
-            ymin = parseFloat(extentArray[1]),
-            xmax = parseFloat(extentArray[2]),
-            ymax = parseFloat(extentArray[3]);
+        var xmin = parseFloat(extentArray[0]), ymin = parseFloat(extentArray[1]), xmax = parseFloat(extentArray[2]), ymax = parseFloat(extentArray[3]);
         if (isNaN(xmin) || isNaN(ymin) || isNaN(xmax) || isNaN(ymax)) {
             return null;
         }
@@ -131,7 +121,6 @@ define(["require", "exports", "esri/Camera", "esri/core/promiseUtils", "esri/cor
         return ext;
     }
     exports.parseExtent = parseExtent;
-
     function parseMarker(marker) {
         // ?marker=-117;34;4326;My Title;http://www.daisysacres.com/images/daisy_icon.gif;My location&level=10
         // ?marker=-117,34,4326,My Title,http://www.daisysacres.com/images/daisy_icon.gif,My location&level=10
@@ -154,10 +143,7 @@ define(["require", "exports", "esri/Camera", "esri/core/promiseUtils", "esri/cor
             "esri/symbols/PictureMarkerSymbol",
             "esri/symbols/SimpleMarkerSymbol"
         ]).then(function (modules) {
-            var Graphic = modules[0],
-                PopupTemplate = modules[1],
-                PictureMarkerSymbol = modules[2],
-                SimpleMarkerSymbol = modules[3];
+            var Graphic = modules[0], PopupTemplate = modules[1], PictureMarkerSymbol = modules[2], SimpleMarkerSymbol = modules[3];
             var x = parseFloat(markerArray[0]);
             var y = parseFloat(markerArray[1]);
             var content = markerArray[3];
@@ -209,7 +195,6 @@ define(["require", "exports", "esri/Camera", "esri/core/promiseUtils", "esri/cor
         var splitValues = value.split(";");
         return splitValues.length === 1 ? value.split(",") : splitValues;
     }
-
     function _getCameraPosition(camera) {
         if (!camera) {
             return null;
@@ -219,9 +204,7 @@ define(["require", "exports", "esri/Camera", "esri/core/promiseUtils", "esri/cor
         if (positionArray.length < 3) {
             return null;
         }
-        var x = parseFloat(positionArray[0]),
-            y = parseFloat(positionArray[1]),
-            z = parseFloat(positionArray[2]);
+        var x = parseFloat(positionArray[0]), y = parseFloat(positionArray[1]), z = parseFloat(positionArray[2]);
         var wkid = positionArray.length === 4 ? parseInt(positionArray[3], 10) : 4326;
         return new Point({
             x: x,
@@ -232,7 +215,6 @@ define(["require", "exports", "esri/Camera", "esri/core/promiseUtils", "esri/cor
             }
         });
     }
-
     function _getHeadingAndTilt(headingAndTilt) {
         if (!headingAndTilt) {
             return null;
@@ -243,13 +225,10 @@ define(["require", "exports", "esri/Camera", "esri/core/promiseUtils", "esri/cor
             tilt: parseFloat(tiltHeadingArray[1])
         } : null;
     }
-
     function _getCameraProperties(camera, headingAndTilt) {
         var cameraPosition = _getCameraPosition(camera);
         var headingAndTiltProperties = _getHeadingAndTilt(headingAndTilt);
-        return __assign({
-            position: cameraPosition
-        }, headingAndTiltProperties);
+        return __assign({ position: cameraPosition }, headingAndTiltProperties);
     }
 });
 //# sourceMappingURL=urlUtils.js.map

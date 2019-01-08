@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "Hesabınız herkese açık olmayan Yapılandırılabilir Uygulamaları kullanmak için lisanslandırılmamış. Lütfen kuruluş yöneticinizden Temel Uygulamalar veya eklenti Temel Uygulamalar lisansı içeren bir kullanıcı türü atamasını isteyin.",
+    "title": "Lisanslı Değil"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "Otomatik sağa kaydırma"
@@ -69,7 +73,7 @@ define({
       "title": "Katmanı aşağı taşı"
     },
     "remove_layer": {
-      "title": "Katmanı haritadan kaldır"
+      "title": "Katmanı kaldır"
     },
     "zoom_to_layer": {
       "title": "Katmana Yakınlaştır"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "Haritaya Ekle"
+      "title": "Ekle"
     },
     "add_to_map_only_visible": {
-      "title": "Haritaya Ekle (sadece görünür katman olarak)"
+      "title": "Ekle (sadece görünür katman olarak)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "Öğenin ayrıntılı açıklaması mevcut değildir."
   },
   "notifications": {
-    "layer_added_template": "‘{Title}’ katmanı haritaya başarıyla eklendi.",
+    "layer_added_template": "‘{Title}’ katmanı başarıyla eklendi.",
     "view_details": {
       "innerHTML": "ayrıntıları görüntüle"
     },

@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "귀하의 계정에는 공개 상태가 아닌 구성 설정 앱을 사용할 수 있는 라이선스가 없습니다. 필수 앱 또는 애드온 필수 앱 라이선스가 포함된 사용자 유형을 업무 지시하려면 기관 관리자에게 문의하세요.",
+    "title": "라이선스가 없음"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "오른쪽 자동 스크롤"
@@ -69,7 +73,7 @@ define({
       "title": "레이어를 아래로 이동"
     },
     "remove_layer": {
-      "title": "맵에서 레이어 제거"
+      "title": "레이어 제거"
     },
     "zoom_to_layer": {
       "title": "레이어로 확대/축소"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "맵에 추가"
+      "title": "추가"
     },
     "add_to_map_only_visible": {
-      "title": "맵에 추가(가시 레이어로만)"
+      "title": "추가(가시 레이어로만)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "항목의 자세한 요약을 사용할 수 없습니다."
   },
   "notifications": {
-    "layer_added_template": "'{title}' 레이어를 맵에 추가했습니다.",
+    "layer_added_template": "'{title}' 레이어가 성공적으로 추가되었습니다.",
     "view_details": {
       "innerHTML": "세부정보 보기"
     },

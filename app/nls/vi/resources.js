@@ -1,13 +1,17 @@
 define({
+  "licenseError": {
+    "message": "Tài khoản của bạn không được cấp phép để sử dụng Ứng dụng có thể cấu hình mà không được chia sẻ công khai. Vui lòng yêu cầu quản trị viên của tổ chức bạn gán cho bạn loại người dùng nào có bao gồm các ứng dụng thiết yếu hoặc có giấy phép sử dụng các ứng dụng thiết yếu bổ trợ.",
+    "title": "Không được cấp phép"
+  },
   "ui": {
     "auto-scroll-right": {
-      "title": "Tự động cuộn phải"
+      "title": "Tự động cuộn sang bên phải"
     },
     "auto-scroll-left": {
-      "title": "Tự động cuộn trái"
+      "title": "Tự động cuộn sang bên trái"
     },
     "auto-scroll-reset": {
-      "title": "Đặt lại tự động cuộn"
+      "title": "Thiết lập lại chế độ tự động cuộn"
     },
     "view-type-label-2D": {
       "innerHTML": "2D"
@@ -42,7 +46,7 @@ define({
       "title": "Bật/tắt Bảng Nội dung"
     },
     "up_toggle": {
-      "title": "Bật/tắt Bảng Mục"
+      "title": "Bật/tắt Bảng thông tin mục"
     },
     "basemapExpand": {
       "tooltip": "Bản đồ nền"
@@ -69,7 +73,7 @@ define({
       "title": "Di chuyển lớp xuống dưới"
     },
     "remove_layer": {
-      "title": "Di chuyển lớp từ bản đồ"
+      "title": "Gỡ bỏ lớp"
     },
     "zoom_to_layer": {
       "title": "Thu phóng đến Lớp"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "Thêm vào Bản đồ"
+      "title": "Thêm"
     },
     "add_to_map_only_visible": {
-      "title": "Thêm vào Bản đồ (dưới dạng lớp hiển thị duy nhất)"
+      "title": "Thêm (là lớp hiển thị duy nhất)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "Không có mô tả chuyên sâu của mục này."
   },
   "notifications": {
-    "layer_added_template": "Thêm thành công lớp '{title}’ vào bản đồ.",
+    "layer_added_template": "Đã thêm lớp '{title}’ thành công.",
     "view_details": {
       "innerHTML": "xem chi tiết"
     },

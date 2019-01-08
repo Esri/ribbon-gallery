@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "Din konto har ikke licens til at bruge Konfigurérbare apps, der ikke er offentlige. Bed din organisationsadministrator om at knytte dig til en brugertype, der omfatter Essential Apps eller en add-on Essential Apps-licens.",
+    "title": "Ikke licenseret"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "Auto-rul til højre"
@@ -69,7 +73,7 @@ define({
       "title": "Flyt lag ned"
     },
     "remove_layer": {
-      "title": "Fjern lag fra kortet"
+      "title": "Fjern lag"
     },
     "zoom_to_layer": {
       "title": "Zoom til lag"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "Føj til kort"
+      "title": "Tilføj"
     },
     "add_to_map_only_visible": {
-      "title": "Føj til kort (som det eneste synlige lag)"
+      "title": "Tilføj (som det eneste synlige lag)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "En dybtgående beskrivelse af elementet er ikke tilgængeligt."
   },
   "notifications": {
-    "layer_added_template": "Laget ”{title}” er føjet til kortet.",
+    "layer_added_template": "Laget '{title}' blev tilføjet.",
     "view_details": {
       "innerHTML": "vis oplysninger"
     },

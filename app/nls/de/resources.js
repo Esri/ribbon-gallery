@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "Ihr Konto ist nicht für die Verwendung von nicht öffentlichen konfigurierbaren Apps lizenziert. Bitten Sie den Administrator der Organisation, Ihnen einen Benutzertyp mit Essential Apps oder eine Add-On-Lizenz für Essential Apps zuzuweisen.",
+    "title": "Nicht lizenziert"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "Automatisch nach rechts verschieben"
@@ -69,7 +73,7 @@ define({
       "title": "Layer nach unten verschieben"
     },
     "remove_layer": {
-      "title": "Layer aus Karte entfernen"
+      "title": "Layer entfernen"
     },
     "zoom_to_layer": {
       "title": "Auf Layer zoomen"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "Zur Karte hinzufügen"
+      "title": "Hinzufügen"
     },
     "add_to_map_only_visible": {
-      "title": "Zur Karte hinzufügen (als einzig sichtbarer Layer)"
+      "title": "Hinzufügen (als einzig sichtbarer Layer)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "Eine detaillierte Beschreibung des Elements ist nicht verfügbar."
   },
   "notifications": {
-    "layer_added_template": "Layer '{title}' wurde erfolgreich der Karte hinzugefügt.",
+    "layer_added_template": "Layer '{title}' wurde erfolgreich hinzugefügt.",
     "view_details": {
       "innerHTML": "Details anzeigen"
     },

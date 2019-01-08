@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "החשבון שלך אינו מורשה להשתמש באפליקציות הניתנות להגדרה שאינן ציבוריות. בקש ממנהל המערכת בארגון שלך להקצות לך סוג משתמש שכולל את Essential Apps או רישיון הרחבה ל-Essential Apps.",
+    "title": "ללא רישיון"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "גלילה אוטומית לימין"
@@ -69,7 +73,7 @@ define({
       "title": "העבר שכבה למטה"
     },
     "remove_layer": {
-      "title": "הסר שכבה מהמפה"
+      "title": "הסר שכבה"
     },
     "zoom_to_layer": {
       "title": "שנה גודל לשכבה"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "הוסף למפה"
+      "title": "הוספה"
     },
     "add_to_map_only_visible": {
-      "title": "הוסף למפה (כשכבה הגלויה היחידה)"
+      "title": "הוסף (כשכבה הגלויה היחידה)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "תיאור מעמיק של הפריט לא זמין."
   },
   "notifications": {
-    "layer_added_template": "השכבה '{title}' נוספה למפה בהצלחה.",
+    "layer_added_template": "השכבה '{title}' נוספה בהצלחה.",
     "view_details": {
       "innerHTML": "הצג פרטים"
     },

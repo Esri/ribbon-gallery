@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "Vaš račun ni licenciran za uporabo konfigurabilnih aplikacij, ki niso javne. Prosite administratorja v vaši organizaciji, da vam dodeli tip uporabnika, ki vsebuje aplikacije Essential Apps ali licenco za dodatne aplikacije Essential Apps.",
+    "title": "Brez licence"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "Samodejno premikanje v desno"
@@ -39,7 +43,7 @@ define({
   },
   "map": {
     "left_toggle": {
-      "title": "Preklopi stransko ploščo"
+      "title": "Preklopi vsebinsko ploščo"
     },
     "up_toggle": {
       "title": "Preklopi ploščo z elementi"
@@ -69,7 +73,7 @@ define({
       "title": "Premakni sloj navzdol"
     },
     "remove_layer": {
-      "title": "Odstrani sloj s karte"
+      "title": "Odstrani sloj"
     },
     "zoom_to_layer": {
       "title": "Približaj na sloj"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "Dodaj na karto"
+      "title": "Dodaj"
     },
     "add_to_map_only_visible": {
-      "title": "Dodaj na karto (kot edini vidni sloj)"
+      "title": "Dodaj (kot edini vidni sloj)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "Podroben opis elementa ni na voljo."
   },
   "notifications": {
-    "layer_added_template": "Sloj »{title}« je uspešno dodan na karto.",
+    "layer_added_template": "Sloj '{title}' je uspešno dodan.",
     "view_details": {
       "innerHTML": "ogled podrobnosti"
     },

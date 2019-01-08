@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "Ditt konto har ingen licens för att använda konfigurerbara appar som inte är tillgängliga för allmänheten. Be din organisations administratör att tilldela dig en användartyp som omfattar Essential Apps eller en tilläggslicens för Essential Apps.",
+    "title": "Inte licensierad"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "Rulla till höger automatiskt"
@@ -69,7 +73,7 @@ define({
       "title": "Flytta lager nedåt"
     },
     "remove_layer": {
-      "title": "Ta bort lagret från kartan"
+      "title": "Ta bort lager"
     },
     "zoom_to_layer": {
       "title": "Zooma till lager"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "Lägg till i karta"
+      "title": "Lägg till"
     },
     "add_to_map_only_visible": {
-      "title": "Lägg till på kartan (som det enda synliga lagret)"
+      "title": "Lägg till (som enda synliga lager)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "En detaljerad beskrivning av objektet saknas."
   },
   "notifications": {
-    "layer_added_template": "Lagret '{title}’ lades till på kartan.",
+    "layer_added_template": "Lagret {title} har lagts till.",
     "view_details": {
       "innerHTML": "visa information"
     },

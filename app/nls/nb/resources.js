@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "Kontoen din er ikke lisensiert til å bruke konfigurerbare apper som ikke er offentlige. Be administratoren for organisasjonen om å tilordne deg en brukertype som omfatter Essential Apps eller en tilleggslisens for Essential Apps.",
+    "title": "Ikke lisensiert"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "Autorull høyre"
@@ -69,7 +73,7 @@ define({
       "title": "Flytt laget nedover"
     },
     "remove_layer": {
-      "title": "Fjern laget fra kartet"
+      "title": "Fjern lag"
     },
     "zoom_to_layer": {
       "title": "Zoom til lag"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "Legg til i kart"
+      "title": "Legg til"
     },
     "add_to_map_only_visible": {
-      "title": "Legg til i kart (som eneste synlige lag)"
+      "title": "Legg til (som eneste synlige lag)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "Det finnes ikke en detaljert beskrivelse av elementet."
   },
   "notifications": {
-    "layer_added_template": "Laget {title} er lagt til i kartet.",
+    "layer_added_template": "Laget {title} er lagt til.",
     "view_details": {
       "innerHTML": "vis detaljer"
     },

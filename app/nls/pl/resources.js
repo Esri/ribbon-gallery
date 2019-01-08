@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "Twoje konto nie jest licencjonowane do korzystania z aplikacji konfigurowalnych, które nie są publiczne. Poproś administratora instytucji o przypisanie typu użytkownika, który obejmuje licencję na kluczowe aplikacje lub licencję na kluczowe aplikacje dodatkowe.",
+    "title": "Nie licencjonowano"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "Automatycznie przewiń w prawo"
@@ -69,7 +73,7 @@ define({
       "title": "Przenieś warstwę w dół"
     },
     "remove_layer": {
-      "title": "Usuń warstwę z mapy"
+      "title": "Usuń warstwę"
     },
     "zoom_to_layer": {
       "title": "Powiększ do warstwy"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "Dodaj do mapy"
+      "title": "Dodaj"
     },
     "add_to_map_only_visible": {
-      "title": "Dodaj do mapy (jako jedyną widoczną warstwę)"
+      "title": "Dodaj (jako jedyną widoczną warstwę)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "Szczegółowy opis elementu jest niedostępny."
   },
   "notifications": {
-    "layer_added_template": "Warstwa '{title}' została pomyślnie dodana do mapy.",
+    "layer_added_template": "Pomyślnie dodano warstwę '{title}'.",
     "view_details": {
       "innerHTML": "wyświetl szczegóły"
     },

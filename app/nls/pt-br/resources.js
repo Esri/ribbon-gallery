@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "Sua conta não está licenciada para utilizar Aplicativos Configuráveis que não sejam públicos. Solicite ao administrador da sua organização que lhe atribua um tipo de usuário que inclua os Aplicativos Fundamentais ou uma licença complementar dos Aplicativos Fundamentais.",
+    "title": "Não Licenciado"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "Auto rolagem à direita"
@@ -69,7 +73,7 @@ define({
       "title": "Mover camada para baixo"
     },
     "remove_layer": {
-      "title": "Remover camada do mapa"
+      "title": "Remover camada"
     },
     "zoom_to_layer": {
       "title": "Zoom para Camada"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "Adicionar no Mapa"
+      "title": "Adicionar"
     },
     "add_to_map_only_visible": {
-      "title": "Adicionar ao Mapa (como a única camada visível)"
+      "title": "Adicionar (como a única camada visível)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "Uma descrição detalhada do item não está disponível."
   },
   "notifications": {
-    "layer_added_template": "A camada '{title}’ foi adicionada ao mapa com sucesso.",
+    "layer_added_template": "Camada '{title}’ adicionada com sucesso.",
     "view_details": {
       "innerHTML": "visualizar detalhes"
     },

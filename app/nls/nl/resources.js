@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "Uw account heeft geen licentie om configureerbare apps te gebruiken die niet openbaar zijn. Vraag uw organisatiebeheerder om u een gebruikerstype toe te wijzen dat Essential Apps of een add-on Essential Apps-licentie bevat.",
+    "title": "Geen licentie"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "Automatische scroll rechts"
@@ -69,7 +73,7 @@ define({
       "title": "Verplaats laag naar beneden"
     },
     "remove_layer": {
-      "title": "Laag verwijderen van kaart"
+      "title": "Kaartlaag verwijderen"
     },
     "zoom_to_layer": {
       "title": "Zoomen naar laag"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "Aan kaart toevoegen"
+      "title": "Toevoegen"
     },
     "add_to_map_only_visible": {
-      "title": "Aan kaart toevoegen (als de enige zichtbare laag)"
+      "title": "Toevoegen (als de enige zichtbare laag)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "Er is geen uitgebreide beschrijving van het item beschikbaar."
   },
   "notifications": {
-    "layer_added_template": "De laag '{title}' is toegevoegd aan de kaart.",
+    "layer_added_template": "Laag '{title}’ met succes toegevoegd.",
     "view_details": {
       "innerHTML": "details weergeven"
     },

@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "Az Ön fiókjának licence nem terjed ki a nem nyilvános konfigurálható alkalmazásokra. Igényelje a szervezete adminisztrátorától, hogy rendeljen Önhöz olyan felhasználótípust, amely tartalmazza az alapvető alkalmazásokat, vagy egy kiegészítő alapvető alkalmazásokra vonatkozó licencet.",
+    "title": "Nincs licence"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "Automatikus görgetés jobbra"
@@ -69,7 +73,7 @@ define({
       "title": "Réteg mozgatása lejjebb"
     },
     "remove_layer": {
-      "title": "Réteg eltávolítása a térképról"
+      "title": "Réteg eltávolítása"
     },
     "zoom_to_layer": {
       "title": "Nagítás a rétegre"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "Hozzáadás a térképhez"
+      "title": "Hozzáadás"
     },
     "add_to_map_only_visible": {
-      "title": "Hozzáadás a térképhez (egyedüli látható rétegként)"
+      "title": "Hozzáadás (egyedüli látható rétegként)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "Nem áll rendelkezésre részletes leírás az elemről."
   },
   "notifications": {
-    "layer_added_template": "A(z) „{title}” réteg sikeresen hozzáadva a térképhez.",
+    "layer_added_template": "A(z) ’{title}’ réteg sikeresen hozzáadva.",
     "view_details": {
       "innerHTML": "részletek megtekintése"
     },

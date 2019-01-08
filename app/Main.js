@@ -83,7 +83,7 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             this.importPolyfills();
             this.base = base;
             var config = base.config;
-            // APPLY SHARED THEMING 
+            // APPLY SHARED THEMING
             this.applySharedTheme(base);
             // LOCALE AND DIRECTION //
             domHelper_1.setPageLocale(base.locale);
@@ -100,17 +100,18 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                     }
                 }
             });
-            // APP TITLE // 
+            // APP TITLE //
             domHelper_1.setPageTitle(config.title);
             var appTitle = document.getElementById("app-title-node");
             appTitle.innerHTML = config.title;
             appTitle.title = config.title;
-            // USER SIGN IN // 
+            // USER SIGN IN //
             return this.initializeUserSignIn().always(function () {
                 // CREATE MAP //
                 _this.createMap().then(function (map_infos) {
                     // ADD ITEM TO MAP //
                     _this.addItemToMap = _this._addItemToMap(map_infos.map);
+                    _this.zoomToMap = _this._zoomToMap(map_infos);
                     // SYNC VIEWS //
                     if (_this.base.config.displayMode === "both") {
                         // SHOW THE VIEW TYPE SWITCH
@@ -133,7 +134,7 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
         };
         // APPLY THEME DEFINED BY THE ORG OR CUSTOMIZED VIA CONFIG
         Main.prototype.applySharedTheme = function (base) {
-            var styles = "\n        .top-nav{\n            background-color:" + base.config.headerBackground + ";\n            background-image:" + (base.config.headerBackgroundImage ? 'url(./assets/topo3.png)' : 'none') + ";\n        }\n        .text-white, .panel-toggle-up{\n            color: " + base.config.headerColor + ";\n        }\n        .content-item-title{\n            color: " + base.config.linkColor + ";\n        }\n        .toggle-switch-track:after{\n            background-color: " + base.config.switchButtonColor + ";\n        }\n        .esri-icon-light-blue:before, .icon-ui-light-blue:before{\n            color:" + base.config.navButtonColor + ";\n        }\n        .pulse:before{\n            color: " + base.config.navGlobeColor + ";\n        }\n        .nav-btn .svg-icon{\n            fill: " + base.config.navButtonColor + ";\n        }\n        #content_title .text-blue, a{\n            color: " + base.config.panelLink + ";\n        }\n        .panel-white{\n            background-color: " + base.config.panelBackground + ";\n            color: " + base.config.panelColor + ";\n        }       \n        ";
+            var styles = "\n        .top-nav{\n            background-color:" + base.config.headerBackground + ";\n            background-image:" + (base.config.headerBackgroundImage ? 'url(./assets/topo3.png)' : 'none') + ";\n        }\n        .text-white, .panel-toggle-up{\n            color: " + base.config.headerColor + ";\n        }\n        .panel-toggle-up{\n          background:" + base.config.headerBackground + ";\n        }\n        .content-item-title{\n            color: " + base.config.linkColor + ";\n        }\n        .toggle-switch-track:after{\n            background-color: " + base.config.switchButtonColor + ";\n        }\n        .esri-icon-light-blue:before, .icon-ui-light-blue:before{\n            color:" + base.config.navButtonColor + ";\n        }\n        .pulse:before{\n            color: " + base.config.navGlobeColor + ";\n        }\n        .nav-btn .svg-icon{\n            fill: " + base.config.navButtonColor + ";\n        }\n        #content_title .text-blue, a{\n            color: " + base.config.panelLink + ";\n        }\n        .panel-white{\n            background-color: " + base.config.panelBackground + ";\n            color: " + base.config.panelColor + ";\n        }\n        .panel-toggle-left{\n          background-color:" + base.config.panelBackground + ";\n          color:" + base.config.panelColor + ";\n        }\n        ";
             var style = document.createElement("style");
             style.appendChild(document.createTextNode(styles));
             document.head.appendChild(style);
@@ -157,8 +158,6 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             var display_switch = document.getElementById("display-type-input");
             on(display_switch, "change", function () {
                 var view_type = display_switch.checked ? "3d" : "2d";
-                //  const arrayViews: (MapView | SceneView)[] = [views.get("3d"), views.get("2d")];
-                // const arrayViews: (MapView | SceneView)[] = views;
                 views.forEach(function (view) {
                     domClass.toggle(view.container, "visually-hidden", (view.type !== view_type));
                 });
@@ -280,7 +279,8 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                     views: []
                 };
                 createViewsResults.forEach(function (createViewsResult) {
-                    map_info.views.push(createViewsResult.value);
+                    var view = createViewsResult.value;
+                    map_info.views.push(view);
                 });
                 return map_info;
             });
@@ -295,17 +295,18 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
         */
         Main.prototype.createView = function (map, type, container_id) {
             return __awaiter(this, void 0, void 0, function () {
-                var EARTH_RADIUS, view_settings, view, error_1, collapse, left_container, panelToggleBtn, up_container, listToggleBtn, updating_node, homeWidget, compass;
+                var EARTH_RADIUS, _a, level, coords, view_settings, view, error_1, collapse, left_container, panelToggleBtn, up_container, listToggleBtn, updating_node, homeWidget, compass;
                 var _this = this;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
                         case 0:
                             EARTH_RADIUS = 6371000;
+                            _a = this.base.config.customExtent, level = _a.level, coords = _a.coords;
                             view_settings = {
                                 container: container_id,
                                 map: map,
-                                center: [5.0, 20.0],
-                                scale: 104255914,
+                                center: this.base.config.useCustomExtent && coords ? [coords.longitude, coords.latitude] : [5.0, 20.0],
+                                zoom: this.base.config.useCustomExtent && level ? level : 2,
                                 constraints: (type === "2d") ? { snapToZoom: false } : { altitude: { max: (EARTH_RADIUS * 6) } },
                                 highlightOptions: {
                                     color: "#00c0eb",
@@ -314,16 +315,16 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                                 }
                             };
                             view = (type === "2d") ? new MapView(view_settings) : new SceneView(view_settings);
-                            _a.label = 1;
+                            _b.label = 1;
                         case 1:
-                            _a.trys.push([1, 3, , 4]);
+                            _b.trys.push([1, 3, , 4]);
                             return [4 /*yield*/, view.when()];
                         case 2:
-                            _a.sent();
+                            _b.sent();
                             return [3 /*break*/, 4];
                         case 3:
-                            error_1 = _a.sent();
-                            // TODO handle disabling 3d for browsers 
+                            error_1 = _b.sent();
+                            // TODO handle disabling 3d for browsers
                             // that don't support web gl
                             console.log("Error", error_1);
                             return [3 /*break*/, 4];
@@ -463,14 +464,14 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             var action_node = domConstruct.create("div", { className: "panel panel-no-border text-black padding-left-half padding-right-1 font-size-0" }, layers_panel);
             domConstruct.create("span", { innerHTML: i18n.map.layers_panel.innerHTML }, action_node);
             // Hiding remove all layers, hide all layers and show all layers based on holistic testing feedback
-            // We'll review the UX for this and add this capability back at the next release. 
+            // We'll review the UX for this and add this capability back at the next release.
             //const actionTools = domConstruct.create("span", { className: "action-node hide" }, action_node);
             // REMOVE ALL LAYERS //
             /*const remove_layers_btn = domConstruct.create("button", {
                 className: "btn btn-transparent btn-small icon-ui-close-circled icon-ui-flush esri-interactive right",
                 title: i18n.map.remove_layers.title
             }, actionTools);
-     
+        
             remove_layers_btn.addEventListener("click", () => {
                 view.map.layers.removeAll();
                 this.displayItemDetails();
@@ -518,7 +519,7 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                 var tools_node = domConstruct.create("div", { className: "esri-widget" }, parent_node, "first");
                 // REORDER //
                 var reorder_node = domConstruct.create("div", { className: "inline-block" }, tools_node);
-                // only display reorder layer buttons when more than one layer is added to layer list 
+                // only display reorder layer buttons when more than one layer is added to layer list
                 if (layerList.operationalItems.length > 1) {
                     var reorder_up_node = domConstruct.create("button", {
                         className: "btn-link esri-icon-arrow-up",
@@ -628,7 +629,7 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             // LAYER COUNT //
             view.map.layers.on("change", function () {
                 layerListExpand.iconNumber = view.map.layers.length;
-                //hide show layer (add,remove and clear) icons when layers are visible. 
+                //hide show layer (add,remove and clear) icons when layers are visible.
                 // view.map.layers.length > 0 ? domClass.remove(actionTools, "hide") : domClass.add(actionTools, "hide");
             });
             // SYNCHRONIZE LAYERLIST EXPANDS //
@@ -806,7 +807,7 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             var content_container = document.getElementById("content-container-parent");
             var content_box = domGeom.getContentBox(content_container);
             var scrollLeftMax = (content_container.scrollWidth - content_box.w);
-            // Check to see if we should show nav buttons or not 
+            // Check to see if we should show nav buttons or not
             var navElements = document.getElementsByClassName("gallery-nav");
             this.disableGalleryNavigation(content_container.scrollWidth > content_container.offsetWidth, navElements);
             var resizeTimeout;
@@ -862,7 +863,7 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                     scroll_options.distance = scroll_options.auto_distance;
                     scroll_options.auto = true;
                     _scroll_items();
-                    // remove dojo/on when IE11 isn't supported 
+                    // remove dojo/on when IE11 isn't supported
                     // https://caniuse.com/#feat=once-event-listener
                     on.once(content_container, "click", function () {
                         auto_scroll();
@@ -874,7 +875,7 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                     scroll_options.auto = false;
                 }
             };
-            // LEFT // 
+            // LEFT //
             on(document.getElementById("items-list-left"), touch.press, function () {
                 scroll_options.direction = "LEFT";
                 scroll_options.distance = scroll_options.manual_distance;
@@ -1077,6 +1078,7 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
                 add_visible_btn.addEventListener("click", function () {
                     _this.setAllLayersVisibility(false);
                     _this.addItemToMap(layer_item);
+                    _this.zoomToMap(layer_item);
                     _this.displayItemDetails(layer_item);
                 });
             });
@@ -1123,6 +1125,20 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             };
         };
         /**
+      * Zoom to layer if defined
+      *
+      * @param view
+      */
+        Main.prototype._zoomToMap = function (view) {
+            return function (item) {
+                view.views.forEach(function (view) {
+                    if (item && item.extent) {
+                        view.goTo(item.extent);
+                    }
+                });
+            };
+        };
+        /**
         * ADD ITEM TO MAP
         *  - IF THE LAYER IS ALREADY IN THE MAP, JUST MAKE SURE IT'S VISIBLE
         *
@@ -1132,6 +1148,7 @@ define(["require", "exports", "dojo/i18n!./nls/resources", "esri/core/Evented", 
             var _this = this;
             return function (item) {
                 // IS LAYER ALREADY IN THE MAP //
+                console.log("map", map);
                 var item_layer = map.layers.find(function (layer) {
                     return (layer.portalItem.id === item.id);
                 });

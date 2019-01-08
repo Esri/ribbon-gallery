@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "Vaš račun nije licenciran za upotrebu konfigurabilnih appova koji nisu javni. Obratite se administratoru svoje organizacije da vam dodijeli vrstu korisnika koja sadrži licencu za osnovne appove ili za dodatke za osnovne appove.",
+    "title": "Nema licence"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "Automatsko pomicanje desno"
@@ -69,7 +73,7 @@ define({
       "title": "Pomakni sloj prema dolje"
     },
     "remove_layer": {
-      "title": "Ukloni sloj s karte"
+      "title": "Ukloni sloj"
     },
     "zoom_to_layer": {
       "title": "Povećaj sloj"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "Dodaj karti"
+      "title": "Dodaj"
     },
     "add_to_map_only_visible": {
-      "title": "Dodaj karti (kao jedini vidljivi sloj)"
+      "title": "Dodaj (kao jedini vidljivi sloj)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "Detaljni opis stavke nije dostupan."
   },
   "notifications": {
-    "layer_added_template": "Sloj '{title}’ ne može se dodati karti.",
+    "layer_added_template": "Sloj „{title}” uspješno je dodan.",
     "view_details": {
       "innerHTML": "prikaži pojedinosti"
     },

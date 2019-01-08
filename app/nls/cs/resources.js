@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "Váš účet nevlastní licenci k používání konfigurovatelných aplikací, které nejsou veřejné. Požádejte prosím správce své organizace, aby vám přidělil typ uživatele, jehož součástí jsou základní aplikace nebo doplňková licence základních aplikací.",
+    "title": "Chybí licence"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "Automatické posouvání vpravo"
@@ -69,7 +73,7 @@ define({
       "title": "Přesunout vrstvu dolů"
     },
     "remove_layer": {
-      "title": "Odebrat vrstvu z mapy"
+      "title": "Odstranit vrstvu"
     },
     "zoom_to_layer": {
       "title": "Přiblížit na vrstvu"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "Přidat do mapy"
+      "title": "Přidat"
     },
     "add_to_map_only_visible": {
-      "title": "Přidat do mapy (jako jedinou viditelnou vrstvu)"
+      "title": "Přidat (jako jedinou viditelnou vrstvu)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "Podrobný popis položky není k dispozici."
   },
   "notifications": {
-    "layer_added_template": "Vrstva '{title}' byla úspěšně přidána do mapy.",
+    "layer_added_template": "Vrstva '{title}' byla úspěšně přidána.",
     "view_details": {
       "innerHTML": "zobrazit podrobnosti"
     },

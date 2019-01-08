@@ -1,8 +1,6 @@
 define(["require", "exports", "dojo/_base/declare"], function (require, exports, declare) {
     "use strict";
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
+    Object.defineProperty(exports, "__esModule", { value: true });
     /**
      * A decorator that converts a TypeScript class into a declare constructor.
      * This allows declare constructors to be defined as classes, which nicely

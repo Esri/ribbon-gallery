@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "Teie kontol puudub litsents konfigureeritavate rakenduste kasutamiseks, mis ei ole avalikud. Paluge oma organisatsiooni administraatoril määrata teile kasutajatüüp, mis sisaldab olulisi rakendusi või oluliste rakenduse lisalitsentsi.",
+    "title": "Litsents puudub"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "Keri automaatselt paremale"
@@ -69,7 +73,7 @@ define({
       "title": "Nihuta kihti alla"
     },
     "remove_layer": {
-      "title": "Eemalda kiht kaardilt"
+      "title": "Eemalda kiht"
     },
     "zoom_to_layer": {
       "title": "Suumi kihile"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "Lisa kaardile"
+      "title": "Lisa"
     },
     "add_to_map_only_visible": {
-      "title": "Lisa kaardile (ainsa nähtava kihina)"
+      "title": "Lisa (ainsa nähtava kihina)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "Sisuobjekti põhjalik kirjeldus pole saadaval."
   },
   "notifications": {
-    "layer_added_template": "Kiht „{title}“ on kaardile lisatud.",
+    "layer_added_template": "Kiht {title} lisati edukalt.",
     "view_details": {
       "innerHTML": "kuva üksikasjad"
     },

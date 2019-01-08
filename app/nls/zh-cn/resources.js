@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "您的帐户无权使用非公共的可配置应用程序。 请联系您的组织管理员为您分配包含基本应用程序或附加基本应用程序许可的用户类型。",
+    "title": "未经许可"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "自动向右滚动"
@@ -69,7 +73,7 @@ define({
       "title": "下移图层"
     },
     "remove_layer": {
-      "title": "从地图中移除图层"
+      "title": "移除图层"
     },
     "zoom_to_layer": {
       "title": "缩放至图层"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "添加至地图"
+      "title": "添加"
     },
     "add_to_map_only_visible": {
-      "title": "添加至地图(作为唯一可见的图层)"
+      "title": "添加(作为唯一可见的图层)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "项目的进一步描述不可用。"
   },
   "notifications": {
-    "layer_added_template": "图层“{title}”已成功添加到地图中。",
+    "layer_added_template": "已成功添加图层 '{title}'。",
     "view_details": {
       "innerHTML": "查看详细信息"
     },

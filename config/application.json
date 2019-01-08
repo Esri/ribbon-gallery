@@ -29,6 +29,14 @@
   "panelColor": "#4c4c4c",
   "panelBackground": "#fff",
   "panelLink": "#0079c1",
+  "useCustomExtent": false,
+  "customExtent": {
+    "level": null,
+    "coords": {
+      "latitude": null,
+      "longitude": null
+    }
+  },
   "units": "dual",
   "helperServices": {
     "geometry": {

@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "Tiliäsi ei ole lisensoitu käyttämään muunneltavissa olevia sovelluksia, jotka eivät ole julkisia. Pyydä organisaatiosi pääkäyttäjää määrittämään sinulle käyttäjätyyppi, joka sisältää keskeiset sovellukset tai keskeisten sovellusten lisäosan lisenssin.",
+    "title": "Ei lisenssiä"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "Vieritä oikealle automaattisesti"
@@ -69,7 +73,7 @@ define({
       "title": "Siirrä karttatasoa alas"
     },
     "remove_layer": {
-      "title": "Poista karttataso kartasta"
+      "title": "Poista karttataso"
     },
     "zoom_to_layer": {
       "title": "Tarkenna karttatasoon"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "Lisää karttaan"
+      "title": "Lisää"
     },
     "add_to_map_only_visible": {
-      "title": "Lisää karttaan (ainoana näkyvänä karttatasona)"
+      "title": "Lisää (ainoana näkyvänä karttatasona)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "Kohteesta ei ole saatavissa tarkkaa kuvausta."
   },
   "notifications": {
-    "layer_added_template": "Karttataso {title} on lisätty karttaan.",
+    "layer_added_template": "Karttatason {title} lisäys on onnistunut.",
     "view_details": {
       "innerHTML": "näytä tiedot"
     },

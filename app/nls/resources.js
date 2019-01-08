@@ -1,12 +1,19 @@
 define({
   root: ({
-    ui: {"auto-scroll-right": {
-      title: "Auto scroll right"
-    },"auto-scroll-left": {
-      title: "Auto scroll left"
-    },"auto-scroll-reset": {
-      title: "Auto scroll reset"
+    licenseError: {
+      message: "Your account is not licensed to use Configurable Apps that are not public. Please ask your organization administrator to assign you a user type that includes Essential Apps or an add-on Essential Apps license.",
+      title: "Not Licensed"
     },
+    ui: {
+      "auto-scroll-right": {
+        title: "Auto scroll right"
+      },
+      "auto-scroll-left": {
+        title: "Auto scroll left"
+      },
+      "auto-scroll-reset": {
+        title: "Auto scroll reset"
+      },
       "view-type-label-2D": {
         innerHTML: "2D"
       },
@@ -67,7 +74,7 @@ define({
         title: "Move layer down"
       },
       "remove_layer": {
-        title: "Remove layer from map"
+        title: "Remove layer"
       },
       "zoom_to_layer": {
         title: "Zoom to Layer"
@@ -101,10 +108,10 @@ define({
     },
     item: {
       "add_to_map": {
-        title: "Add To Map"
+        title: "Add"
       },
       "add_to_map_only_visible": {
-        title: "Add To Map (as the only visible layer)"
+        title: "Add (as the only visible layer)"
       }
     },
     panel: {
@@ -112,7 +119,7 @@ define({
       "missing_description_item": "An in-depth description of the item is not available."
     },
     notifications: {
-      "layer_added_template": "Layer '{title}' successfully added to the map.",
+      "layer_added_template": "Layer '{title}' successfully added.",
       "view_details": {
         innerHTML: "view details"
       },

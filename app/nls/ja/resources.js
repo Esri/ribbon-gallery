@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "パブリックでないテンプレートを使用するためのライセンスがアカウントに付与されていません。 組織の管理者に Essential Apps またはアドオン Essential Apps ライセンスを含むユーザー タイプを割り当てるよう依頼してください。",
+    "title": "ライセンスがありません。"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "右に自動スクロール"
@@ -34,7 +38,7 @@ define({
       "title": "次へ"
     },
     "items-list-left": {
-      "title": "旧バージョン"
+      "title": "前へ"
     }
   },
   "map": {
@@ -69,7 +73,7 @@ define({
       "title": "レイヤーを下へ移動"
     },
     "remove_layer": {
-      "title": "マップからレイヤーを削除"
+      "title": "レイヤーの削除"
     },
     "zoom_to_layer": {
       "title": "レイヤにズーム"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "マップに追加"
+      "title": "追加"
     },
     "add_to_map_only_visible": {
-      "title": "マップに追加 (表示可能なレイヤーのみ)"
+      "title": "追加 (表示可能なレイヤーのみ)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "アイテムの詳細な説明はありません。"
   },
   "notifications": {
-    "layer_added_template": "レイヤー '{title}' を正常にマップに追加しました。",
+    "layer_added_template": "レイヤー '{title}' が正常に追加されました。",
     "view_details": {
       "innerHTML": "詳細の表示"
     },

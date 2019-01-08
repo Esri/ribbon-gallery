@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "Su cuenta no tiene licencia para utilizar aplicaciones configurables que no son públicas. Pídale al administrador de su organización que le asigne un tipo de usuario que incluya aplicaciones esenciales o una licencia complementaria de aplicaciones esenciales.",
+    "title": "Sin licencia"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "Desplazamiento automático a la derecha"
@@ -69,7 +73,7 @@ define({
       "title": "Mover capa hacia abajo"
     },
     "remove_layer": {
-      "title": "Eliminar la capa del mapa"
+      "title": "Quitar capa"
     },
     "zoom_to_layer": {
       "title": "Zoom a capa"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "Agregar al mapa"
+      "title": "Agregar"
     },
     "add_to_map_only_visible": {
-      "title": "Agregar al mapa (como la única capa visible)"
+      "title": "Agregar (como la única capa visible)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "No hay disponible una descripción detallada del elemento."
   },
   "notifications": {
-    "layer_added_template": "La capa '{title}' se ha agregado correctamente al mapa.",
+    "layer_added_template": "La capa '{title}' se ha agregado correctamente.",
     "view_details": {
       "innerHTML": "ver detalles"
     },

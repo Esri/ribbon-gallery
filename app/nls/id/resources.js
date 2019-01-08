@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "Akun Anda tidak dilisensikan untuk menggunakan Aplikasi yang Dapat Dikonfigurasi yang bukan bersifat publik. Harap minta administrator organisasi Anda untuk menetapkan Anda jenis pengguna yang menyertakan lisensi Essential App atau add-on Essential App.",
+    "title": "Tidak Dilisensikan"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "Gulir kanan otomatis"
@@ -39,10 +43,10 @@ define({
   },
   "map": {
     "left_toggle": {
-      "title": "Hidupkan/Matikan Panel Konten"
+      "title": "Aktifkan/Nonaktifkan Panel Konten"
     },
     "up_toggle": {
-      "title": "Hidupkan/Matikan Panel Item"
+      "title": "Aktifkan/Nonaktifkan Panel Item"
     },
     "basemapExpand": {
       "tooltip": "Peta Dasar"
@@ -69,7 +73,7 @@ define({
       "title": "Pindahkan layer ke bawah"
     },
     "remove_layer": {
-      "title": "Hapus layer dari peta"
+      "title": "Hapus layer"
     },
     "zoom_to_layer": {
       "title": "Zoom hingga Layer"
@@ -81,7 +85,7 @@ define({
       "innerHTML": "Legenda"
     },
     "legend_toggle": {
-      "title": "Hidupkan/Matikan Legenda"
+      "title": "Aktifkan/Nonaktifkan Legenda"
     },
     "settings_panel": {
       "title": "Pengaturan"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "Tambahkan ke Peta"
+      "title": "Tambah"
     },
     "add_to_map_only_visible": {
-      "title": "Tambahkan ke Peta (sebagai satu-satunya layer yang terlihat)"
+      "title": "Tambahkan (sebagai layer yang hanya terlihat)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "Deskripsi mendalam mengenai item tidak tersedia."
   },
   "notifications": {
-    "layer_added_template": "Layer '{title}' berhasil ditambahkan ke peta.",
+    "layer_added_template": "Layer '{title}' berhasil ditambahkan.",
     "view_details": {
       "innerHTML": "lihat detail"
     },

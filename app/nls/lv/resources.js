@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "Jūsu kontam nav licences, lai izmantotu konfigurējamās lietotnes, kas nav publiskas. Pieprasiet savas organizācijas administratoram piešķirt jums lietotāja veidu, kurā iekļauts lietotņu komplekts Essential Apps vai papildinājumlietotņu Essential Apps licence.",
+    "title": "Nav licences"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "Automātiski ritināt pa labi"
@@ -69,7 +73,7 @@ define({
       "title": "Pārvietot slāni lejup"
     },
     "remove_layer": {
-      "title": "Noņemt slāni no kartes"
+      "title": "Noņemt slāni"
     },
     "zoom_to_layer": {
       "title": "Veikt tālummaiņu līdz slānim"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "Pievienot kartei"
+      "title": "Pievienot"
     },
     "add_to_map_only_visible": {
-      "title": "Pievienot kartei (kā vienīgo redzamo slāni)"
+      "title": "Pievienot (kā vienīgo redzamo slāni)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "Paplašināts apraksts par vienību nav pieejams."
   },
   "notifications": {
-    "layer_added_template": "Slāni '{title}’ nevar pievienot kartei.",
+    "layer_added_template": "Slānis “{title}” ir sekmīgi pievienots.",
     "view_details": {
       "innerHTML": "skatīt detalizētu informāciju"
     },

@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "Vaš nalog nema licencu za korišćenje aplikacija koje mogu da se konfigurišu i nisu javne. Zatražite od administratora organizacije da vam dodeli onaj tip korisnika koji uključuje osnovne aplikacije ili licencu za dodatne osnovne aplikacije.",
+    "title": "Nema licencu"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "Automatsko pomeranje udesno"
@@ -69,7 +73,7 @@ define({
       "title": "Pomeri sloj nadole"
     },
     "remove_layer": {
-      "title": "Ukloni sloj sa mape"
+      "title": "Ukloni sloj"
     },
     "zoom_to_layer": {
       "title": "Zumiraj na sloj"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "Dodaj na mapu"
+      "title": "Dodaj"
     },
     "add_to_map_only_visible": {
-      "title": "Dodaj na mapu (kao jedini vidljivi sloj)"
+      "title": "Dodaj (kao jedini vidljivi sloj)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "Detaljan opis stavke nije dostupan."
   },
   "notifications": {
-    "layer_added_template": "Sloj '{title}' je uspešno dodat na mapu.",
+    "layer_added_template": "Sloj '{title}’ je uspešno dodat.",
     "view_details": {
       "innerHTML": "prikaži detalje"
     },

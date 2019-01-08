@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "您的帳號未經授權，無法使用非公開的可配置應用程式。 請聯繫您的組織管理員，請其將包含基礎應用程式或附加元件基礎應用程式授權的使用者類型指派給您。",
+    "title": "未經許可"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "自動向右捲動"
@@ -69,7 +73,7 @@ define({
       "title": "下移圖層"
     },
     "remove_layer": {
-      "title": "從地圖中移除圖層"
+      "title": "移除圖層"
     },
     "zoom_to_layer": {
       "title": "縮放至圖層"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "新增至地圖"
+      "title": "新增"
     },
     "add_to_map_only_visible": {
-      "title": "新增至地圖 (作為唯一的可見圖層)"
+      "title": "新增 (作為唯一的可見圖層)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "無法取得項目的深入描述。"
   },
   "notifications": {
-    "layer_added_template": "已將圖層 '{title}’ 成功地新增至地圖。",
+    "layer_added_template": "已成功新增圖層 '{title}'。",
     "view_details": {
       "innerHTML": "檢視詳細資訊"
     },

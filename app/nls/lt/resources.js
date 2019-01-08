@@ -1,4 +1,8 @@
 define({
+  "licenseError": {
+    "message": "Jūsų paskyra nelicencijuota naudoti ne viešas konfigūruojamas aplikacijas. Kreipkitės į organizacijos administratorių, kad paskirtų jums vartotojo tipą, kuris turi svarbiausias aplikacijas, arba suteiktų jums papildomą svarbiausių aplikacijų licenciją.",
+    "title": "Nelicencijuota"
+  },
   "ui": {
     "auto-scroll-right": {
       "title": "Automatiškai slinkti dešinėn"
@@ -69,7 +73,7 @@ define({
       "title": "Perkelti sluoksnį žemyn"
     },
     "remove_layer": {
-      "title": "Pašalinti sluoksnį iš žemėlapio"
+      "title": "Pašalinti sluoksnį"
     },
     "zoom_to_layer": {
       "title": "Priartinti sluoksnį"
@@ -103,10 +107,10 @@ define({
   },
   "item": {
     "add_to_map": {
-      "title": "Įtraukti į žemėlapį"
+      "title": "Pridėti"
     },
     "add_to_map_only_visible": {
-      "title": "Įtraukti į žemėlapį (kaip vienintelį matomą sluoksnį)"
+      "title": "Pridėti (kaip vienintelį matomą sluoksnį)"
     }
   },
   "panel": {
@@ -114,7 +118,7 @@ define({
     "missing_description_item": "Išsamaus elemento aprašymo nėra."
   },
   "notifications": {
-    "layer_added_template": "Sluoksnis „{title}“ sėkmingai įkeltas į žemėlapį.",
+    "layer_added_template": "Sluoksnis {title} sėkmingai pridėtas.",
     "view_details": {
       "innerHTML": "peržiūrėti išsamią informaciją"
     },
